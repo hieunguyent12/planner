@@ -4,12 +4,15 @@ import { RouterProvider } from "@tanstack/react-router";
 import "./index.css";
 import { DesktopLayout } from "./components/layouts";
 import { router } from "./router";
+import { ThemeProvider } from "./components/theme/theme-provider";
 
 function App() {
   return (
-    <DesktopLayout>
-      <RouterProvider router={router} />
-    </DesktopLayout>
+    <ThemeProvider defaultTheme="dark">
+      <DesktopLayout>
+        <RouterProvider router={router} />
+      </DesktopLayout>
+    </ThemeProvider>
   );
 }
 
