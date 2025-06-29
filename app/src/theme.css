@@ -1,6 +1,6 @@
 :root {
   --primary: #EDF2F6;
-  --primary-foreground: var(--color-zinc-900);
+  --primary-foreground: var(--color-zinc-800);
 
   --menu: #FFFFFF;
   --menu-foreground: var(--color-gray-600);
@@ -11,7 +11,7 @@
 
 .dark {
   --primary: #191919;
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #FFFFFFCF;
 
   --menu: #202020;
   --menu-foreground: var(--color-gray-400);
