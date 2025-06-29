@@ -18,7 +18,7 @@ const preview: Preview = {
   decorators: [
     (Story, context) => {
       return (
-        <div className="bg-menu w-full h-screen p-3">
+        <div className="bg-primary w-full h-screen p-3">
           <ThemeProvider theme={context.globals.backgrounds?.value}>
             <Story />
           </ThemeProvider>
