@@ -1,20 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { ActionBar } from ".";
+import { ActionsBar } from ".";
+import { Container } from "@/components/container";
 
 const meta = {
   title: "Schedule Actions Bar",
-  component: ActionBar,
+  component: ActionsBar,
   decorators: [
     (Story) => {
       return (
-        <div className="bg-menu w-[300px] inline-block rounded-md shadow shadow-gray-200 p-2">
+        <Container className="w-[300px]">
           <Story />
-        </div>
+        </Container>
       );
     },
   ],
-} satisfies Meta<typeof ActionBar>;
+} satisfies Meta<typeof ActionsBar>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

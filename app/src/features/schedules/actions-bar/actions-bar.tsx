@@ -4,7 +4,7 @@ import TablerEdit from "~icons/tabler/edit";
 import TablerTrash from "~icons/tabler/trash";
 import TablerCalendarPlus from "~icons/tabler/calendar-plus";
 
-function ActionBar() {
+function ActionsBar() {
   return (
     <div className="flex justify-between items-center text-gray-400 dark:text-menu-foreground">
       <ScheduleSelect />
@@ -23,4 +23,4 @@ function ActionBar() {
   );
 }
 
-export { ActionBar };
+export { ActionsBar };

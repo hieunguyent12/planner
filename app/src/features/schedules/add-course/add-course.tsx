@@ -1,11 +1,16 @@
 import TablerSearch from "~icons/tabler/search";
-
+import { Container } from "@/components/container";
 import { Input } from "@/components/input";
+import { ActionsBar } from "../actions-bar";
 
 function AddCourse() {
   return (
-    <div className="bg-menu inline-block rounded-md shadow shadow-gray-200 p-2">
-      <p className="text-md pb-2 font-medium text-primary-foreground">
+    <Container>
+      <div className="border-b-1 border-gray-100 dark:border-neutral-700 pb-2">
+        <ActionsBar />
+      </div>
+
+      <p className="text-md pb-2 font-medium text-primary-foreground mt-2">
         Search Courses
       </p>
 
@@ -21,7 +26,7 @@ function AddCourse() {
           ))} */}
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 
