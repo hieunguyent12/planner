@@ -26,6 +26,7 @@ export function ThemeSelect() {
       onValueChange={(value) => {
         setTheme(value as Theme);
       }}
+      className="absolute top-2 right-2 w-21 text-sm"
     >
       <SelectItem
         value="dark"
