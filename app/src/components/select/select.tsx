@@ -27,7 +27,7 @@ export function Select({
       <_Select.Trigger className={cn("select-trigger", className)}>
         <_Select.Value className="capitalize" placeholder={placeholder} />
         <_Select.Icon className="flex">
-          <ChevronUpDownIcon className="text-menu-foreground" />
+          <ChevronUpDownIcon className="text-menu-foreground ml-1" />
         </_Select.Icon>
       </_Select.Trigger>
       <_Select.Portal>
