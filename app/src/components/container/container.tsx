@@ -10,7 +10,7 @@ function Container({
   return (
     <div
       className={cn(
-        "bg-menu inline-block rounded-md shadow shadow-gray-200 dark:shadow-none p-2",
+        "bg-primary inline-block rounded-md shadow shadow-gray-200 dark:shadow-none p-2",
         className
       )}
     >

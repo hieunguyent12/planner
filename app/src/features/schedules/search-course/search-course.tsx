@@ -8,7 +8,7 @@ import { SearchResult } from "./search-result";
 function SearchCourse() {
   return (
     <Container className="w-[400px]">
-      <div className="border-b-1 border-gray-100 dark:border-neutral-700 pb-2">
+      <div className="border-b-1 border-gray-100 dark:border-neutral-800 pb-2">
         <ActionsBar />
       </div>
 
@@ -23,9 +23,7 @@ function SearchCourse() {
 
       <div className="space-y-1">
         <Input placeholder="Search" icon={TablerSearch} />
-        <p className="text-xs text-slate-400 dark:text-gray-400">
-          Example: MAC2302, ACG2010
-        </p>
+        <p className="text-xs text-gray-400">Example: MAC2302, ACG2010</p>
       </div>
 
       <div className="mt-5">

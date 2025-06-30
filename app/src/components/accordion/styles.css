@@ -1,9 +1,9 @@
 @reference "../../index.css";
 
 .accordion-trigger {
-    @apply text-primary-foreground dark:bg-[#252525] bg-gray-50 border-gray-200 dark:border-stone-700 relative flex w-full items-center justify-between gap-4 py-2 pr-1 pl-3 text-left font-medium focus-visible:z-1 focus-visible:outline focus-visible:outline-blue-800;
+    @apply text-primary-foreground bg-container-content-bg border-primary-border relative flex w-full items-center justify-between gap-4 py-2 pr-1 pl-3 text-left focus-visible:z-1 focus-visible:outline focus-visible:outline-blue-800;
 }
 
 .accordion-panel {
-    @apply h-[var(--accordion-panel-height)] border rounded-b-md border-t-0 text-primary-foreground dark:bg-[#252525] bg-gray-50 border-gray-200 dark:border-stone-700 overflow-hidden text-base transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0;
+    @apply h-[var(--accordion-panel-height)] border rounded-b-md border-t-0 text-primary-foreground bg-container-content-bg border-primary-border overflow-hidden text-base transition-[height] ease-out data-[ending-style]:h-0 data-[starting-style]:h-0;
 }

@@ -1,6 +1,6 @@
 @reference "../../index.css";
 
 .input {
-  @apply w-full bg-transparent placeholder:text-slate-400 text-sm border border-slate-200 dark:border-zinc-600 rounded-md focus:outline-none focus:border-sky-600 hover:border-slate-300 dark:hover:border-zinc-400 focus:hover:border-sky-600;
+  @apply w-full bg-transparent placeholder:text-gray-400 border border-primary-border rounded-md focus:outline-none focus:border-blue-500 hover:border-gray-300 dark:hover:border-gray-500 focus:hover:border-blue-500;
   color: var(--primary-foreground);
 }

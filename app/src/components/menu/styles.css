@@ -1,9 +1,8 @@
 @reference "../../index.css";
 
 .menu {
-  @apply relative z-0 flex sm:justify-center gap-1 px-1 py-2 shadow-[inset_0_-1px] shadow-gray-200 dark:shadow-zinc-800;
-  color: var(--menu-foreground);
-  background-color: var(--menu);
+  @apply relative z-0 flex sm:justify-center gap-1 px-1 py-2 shadow-[inset_0_-1px] shadow-container-shadow;
+  background-color: var(--primary);
 }
 
 .menu-item {
@@ -18,7 +17,6 @@
 }
 
 .menu-item-indicator {
-  @apply p-4 absolute top-1/2 left-0 z-[-1] h-6 w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] rounded-sm transition-all duration-200 ease-in-out;
-  /*  dark:bg-[#2b2c2c] */
+  @apply p-4 absolute top-1/2 left-0 z-[-1] h-6 w-[var(--active-tab-width)] -translate-y-1/2 translate-x-[var(--active-tab-left)] rounded-sm transition-[translate] duration-200 ease-in-out;
   background-color: var(--menu-indicator);
 }

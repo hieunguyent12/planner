@@ -1,6 +1,13 @@
 :root {
-  --primary: #EDF2F6;
-  --primary-foreground: var(--color-zinc-800);
+  --background: #EDF2F6;
+
+  --primary: #FFFFFF;
+  --primary-foreground: var(--color-gray-800);
+  --primary-hover: var(--color-gray-200);
+  
+  --container-shadow: var(--color-gray-200);
+  --container-content-bg: var(--color-gray-50);
+  --primary-border: var(--color-gray-200);
 
   --menu: #FFFFFF;
   --menu-foreground: var(--color-gray-600);
@@ -10,19 +17,33 @@
 }
 
 .dark {
-  --primary: #191919;
+  --background: #191919;
+
+  --primary: #202020;
   --primary-foreground: #FFFFFFCF;
 
+  --container-shadow: var(--color-zinc-800);
+  --primary-border: var(--color-neutral-700);
+  --container-content-bg: #252525;
+  --primary-hover: #373737;
+
   --menu: #202020;
-  --menu-foreground: var(--color-gray-400);
+  --menu-foreground: #A6AFBF;
   --menu-foreground-hover: #FFFFFFCF;
   --menu-foreground-selected: #FFFFFFCF;
   --menu-indicator: #373737;
 }
 
 @theme inline {
+  --color-background: var(--background);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-container-content-bg: var(--container-content-bg);
+  --color-primary-hover: var(--primary-hover);
+
+  --color-container-shadow: var(--container-shadow);
+  --color-primary-border: var(--primary-border);
 
   --color-menu: var(--menu);
   --color-menu-foreground: var(--menu-foreground);
