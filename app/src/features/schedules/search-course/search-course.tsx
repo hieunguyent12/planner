@@ -3,6 +3,7 @@ import { Container } from "@/components/container";
 import { Input } from "@/components/input";
 import { ActionsBar } from "../actions-bar";
 import { SemesterSelect } from "../semester-select";
+import { SearchResult } from "./search-result";
 
 function SearchCourse() {
   return (
@@ -20,17 +21,15 @@ function SearchCourse() {
         </div>
       </div>
 
-      <Input placeholder="Search" icon={TablerSearch} />
-      <div className="max-h-106 overflow-y-auto overflow-x-hidden">
-        <div className="p-2">
-          {/* {searchResults.map((result) => (
-            <SearchResult
-              key={result.id}
-              result={result}
-              onAddCourse={onAddCourse}
-            />
-          ))} */}
-        </div>
+      <div className="space-y-1">
+        <Input placeholder="Search" icon={TablerSearch} />
+        <p className="text-xs text-slate-400 dark:text-gray-400">
+          Example: MAC2302, ACG2010
+        </p>
+      </div>
+
+      <div className="mt-5">
+        <SearchResult />
       </div>
     </Container>
   );
