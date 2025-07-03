@@ -1,0 +1,44 @@
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 35px repeat(5, 1fr);
+  
+  /* grid-template-rows: 30px; */
+  /* I'm copying the approach that ONE.UF uses to render class schedules.
+  I think this CSS method works really because it provides responsiveness and is easy to create grid.
+  I can't think of something better but if there is a better solution, please lmk! */
+    grid-template-areas: 
+    ". Mon Tue Wed Thu Fri"
+    "hour0 . . . . ."
+    "hour1 . . . . ."
+    "hour2 . . . . ."
+    "hour3 . . . . ."
+    "hour4 . . . . ."
+    "hour5 . . . . ."
+    "hour6 . . . . ."
+    "hour7 . . . . ."
+    "hour8 . . . . ."
+    "hour9 . . . . ."
+    "hour10 . . . . ."
+    "hour11 . . . . ."
+    "hour12 . . . . ."
+    "hour13 . . . . ."
+    "hour14 . . . . ."
+    "hour15 . . . . ."
+    "hour16 . . . . ."
+    "hour17 . . . . ."
+    "hour18 . . . . ."
+    "hour19 . . . . ."
+    "hour20 . . . . ."
+    "hour21 . . . . ."
+    "hour22 . . . . ."
+    "hour23 . . . . .";
+}
+
+.calendar-grid.tiny {
+  grid-template-columns: 35px repeat(5, 35px);
+}
+
+.day-header {
+  display: flex;
+  justify-content: center; 
+}
