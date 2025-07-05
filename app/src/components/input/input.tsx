@@ -38,7 +38,7 @@ function Input({ className, size, icon, ...props }: InputProps) {
   const Icon = icon;
 
   return (
-    <div className="w-full max-w-sm min-w-[200px]">
+    <div className="w-full min-w-[200px]">
       <div className="relative">
         {Icon && (
           <Icon

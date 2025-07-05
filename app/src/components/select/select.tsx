@@ -7,6 +7,7 @@ type SelectProps = {
   placeholder: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  popUpClassname?: string;
 
   onValueChange?: (val: any) => void;
 };
@@ -18,13 +19,14 @@ export function Select({
   children,
   onValueChange,
   className,
+  popUpClassname,
 }: SelectProps) {
   return (
     <_Select.Root
       onValueChange={(value) => onValueChange?.(value)}
       defaultValue={defaultValue}
     >
-      <_Select.Trigger className={cn("select-trigger", className)}>
+      <_Select.Trigger className={cn("select-trigger h-7", className)}>
         <_Select.Value className="capitalize" placeholder={placeholder} />
         <_Select.Icon className="flex">
           <ChevronUpDownIcon className="text-menu-foreground ml-1" />
@@ -37,7 +39,12 @@ export function Select({
           sideOffset={8}
         >
           <_Select.ScrollUpArrow className="top-0 z-[1] flex h-4 w-full cursor-default items-center justify-center rounded-md bg-[canvas] text-center text-xs before:absolute before:top-[-100%] before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:bottom-[-100%]" />
-          <_Select.Popup className="group select-popup">
+          <_Select.Popup
+            className={cn(
+              "group select-popup shadow-lg shadow-gray-200",
+              popUpClassname
+            )}
+          >
             {children}
           </_Select.Popup>
           <_Select.ScrollDownArrow className="bottom-0 z-[1] flex h-4 w-full cursor-default items-center justify-center rounded-md bg-[canvas] text-center text-xs before:absolute before:top-[-100%] before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:bottom-[-100%]" />

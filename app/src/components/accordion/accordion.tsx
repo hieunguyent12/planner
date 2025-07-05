@@ -13,8 +13,12 @@ function Accordion({
     <BaseAccordion.Root className="flex flex-col justify-center text-gray-900">
       {children
         ? children
-        : items.map((item) => (
-            <AccordionItem trigger={item.trigger} content={item.content} />
+        : items.map((item, idx) => (
+            <AccordionItem
+              key={idx}
+              trigger={item.trigger}
+              content={item.content}
+            />
           ))}
     </BaseAccordion.Root>
   );
