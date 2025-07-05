@@ -74,12 +74,40 @@ export const BasicFourYearPlan: any = [
       },
     },
   },
+  {
+    semesters: {
+      fall: {
+        courses,
+      },
+      spring: {
+        courses,
+      },
+      summer: {
+        courses,
+      },
+    },
+  },
+  {
+    semesters: {
+      fall: {
+        courses,
+      },
+      spring: {
+        courses,
+      },
+      summer: {
+        courses,
+      },
+    },
+  },
 ];
 
 function RouteComponent() {
   return (
-    <Container className="w-full border-r-1 border-r-background p-2">
-      <Plan fourYearPlan={BasicFourYearPlan} />
-    </Container>
+    <div className="h-[92%] overflow-y-auto scrollbar">
+      <Container className="w-full border-r-1 border-r-background p-2">
+        <Plan fourYearPlan={BasicFourYearPlan} />
+      </Container>
+    </div>
   );
 }

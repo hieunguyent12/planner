@@ -215,9 +215,9 @@ const courses: ScheduleCourse[] = [
 
 function RouteComponent() {
   return (
-    <div className="grid grid-cols-3 gap-4 items-start">
+    <div className="h-full grid grid-cols-3 gap-4 items-start">
       <SearchCourse />
-      <Container className="col-span-2 p-0 mb-10 border-r-1 border-r-background">
+      <Container className="col-span-2 border-r-1 border-r-background p-0 pr-2 h-[92%] overflow-y-auto scrollbar">
         <div className="p-0">
           <Calendar
             // compact
