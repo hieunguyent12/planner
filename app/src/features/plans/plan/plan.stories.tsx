@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Plan } from "..";
+import { Plan } from ".";
 import type { Course } from "@/types";
 
 const meta = {
