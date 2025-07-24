@@ -1,0 +1,10 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "CGO_ENABLED=1 go build -o ./tmp/backend ."
+bin = "tmp/backend"
+include_ext = ["go"]
+exclude_dir = ["vendor", "tmp"]
+poll = true
+
