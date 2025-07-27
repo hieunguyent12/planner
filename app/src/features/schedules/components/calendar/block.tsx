@@ -23,7 +23,7 @@ const Block = ({
     <div
       className={clsx(
         "text-primary-foreground relative border-dashed border-r-1 border-b-1 border-calendar-border",
-        collapsed ? "h-5" : "min-h-18",
+        collapsed ? "h-5" : "min-h-19",
         highlighted && "bg-slate-400 hover:bg-slate-500",
         !children && "hover:bg-calendar-block-hover"
       )}

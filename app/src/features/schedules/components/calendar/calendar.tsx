@@ -4,14 +4,17 @@ import { Block } from "./block";
 import { HoursHeader } from "./hours-header";
 import { NUM_HOURS_PER_DAY, WEEK_DAYS } from "./constants";
 import { MeetingBlock } from "./meeting-block";
-import type { InPersonCourse, ScheduleCourse, ScheduleBlock } from "@/types";
+import type { ScheduleBlock } from "@/types";
 import { OnlineSection } from "./online-section";
 import "./styles.css";
 import clsx from "clsx";
 import { DateTime, Interval } from "luxon";
+import type { DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
+import { getStartingAndEndingCourseTimes } from "@/features/schedules/components/calendar/utils";
+import type { InPersonCourseSection } from "@/features/schedules/schedule";
 
 type CalendarProps = {
-  courses: ScheduleCourse[];
+  courseSections: DetailedCourseSectionSchemaType[];
   timeIntervalToRender?: Interval;
   highlightedBlocks?: ScheduleBlock[];
   compact?: boolean;
@@ -25,7 +28,7 @@ type HeaderProps = {
 };
 
 type BlocksProps = {
-  courses: ScheduleCourse[];
+  courseSections: DetailedCourseSectionSchemaType[];
   timeIntervalToRender?: Interval;
   highlightedBlocks?: CalendarProps["highlightedBlocks"];
   compact?: boolean;
@@ -41,8 +44,16 @@ const Header = ({ timeIntervalToRender, tiny }: HeaderProps) => {
   );
 };
 
+const dayMap = {
+  Mon: "M",
+  Tue: "T",
+  Wed: "W",
+  Thu: "R",
+  Fri: "F",
+} as const;
+
 const Blocks = ({
-  courses,
+  courseSections,
   timeIntervalToRender,
   highlightedBlocks,
   compact = false,
@@ -52,9 +63,9 @@ const Blocks = ({
   const courseIntervals: Interval[] = [];
 
   if (compact) {
-    courses.forEach((course) => {
-      if (!course.online) {
-        course.meetings.forEach((meeting) => {
+    courseSections.forEach((section) => {
+      if (!section.online) {
+        section.meetings.forEach((meeting) => {
           let endTime = meeting.time.end;
           if (meeting.time.end.minute > 0) {
             endTime = endTime.plus({ hour: 1 });
@@ -87,17 +98,17 @@ const Blocks = ({
         }
       );
 
-      let meetingInfo;
-      const course = courses.find((c): c is InPersonCourse => {
+      let meeting;
+      const section = courseSections.find((c): c is InPersonCourseSection => {
         if (!c.online) {
-          meetingInfo = c.meetings.find((meeting) => {
+          meeting = c.meetings.find((meeting) => {
             return (
               meeting.time.start.hour === hour.hour &&
-              meeting.time.days.includes(day)
+              meeting.time.days.includes(dayMap[day as keyof typeof dayMap])
             );
           });
 
-          return !!meetingInfo;
+          return !!meeting;
         }
 
         return false;
@@ -120,10 +131,10 @@ const Blocks = ({
               )
             }
           >
-            {course && meetingInfo && (
+            {section && meeting && (
               <MeetingBlock
-                course={course}
-                meetingInfo={meetingInfo}
+                courseSection={section}
+                meeting={meeting}
                 compact={compact}
               />
             )}
@@ -139,7 +150,7 @@ const Blocks = ({
 const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
   (
     {
-      courses,
+      courseSections,
       timeIntervalToRender,
       highlightedBlocks,
       compact,
@@ -148,11 +159,14 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     },
     ref
   ) => {
+    timeIntervalToRender =
+      timeIntervalToRender || getStartingAndEndingCourseTimes(courseSections);
+
     return (
       <div
         className="text-primary-foreground"
         style={{
-          maxWidth: "950px",
+          maxWidth: "1000px",
         }}
       >
         <div
@@ -162,7 +176,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           <div className="border-b-1 border-calendar-border shadow-xs"></div>
           <Header timeIntervalToRender={timeIntervalToRender} tiny={tiny} />
           <Blocks
-            courses={courses}
+            courseSections={courseSections}
             timeIntervalToRender={timeIntervalToRender}
             highlightedBlocks={highlightedBlocks}
             compact={compact}
@@ -170,7 +184,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           />
         </div>
 
-        <OnlineSection courses={courses} />
+        <OnlineSection courseSections={courseSections} />
       </div>
     );
   }

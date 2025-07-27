@@ -1,20 +1,14 @@
 import { tv, type VariantProps } from "tailwind-variants";
 import "./styles.css";
-import {
-  useId,
-  useRef,
-  useState,
-  type ComponentType,
-  type SVGProps,
-} from "react";
-import { cn } from "@/utilts/cn";
+import { useId, useRef, type ComponentType, type SVGProps } from "react";
+import { cn } from "@/utils/cn";
 
 const input = tv({
   base: "input",
   variants: {
     size: {
       sm: "py-1.5 px-3",
-      md: "py-2 pr-3 pl-9",
+      md: "py-2 pr-9 pl-9",
       lg: "py-3",
     },
   },
@@ -27,33 +21,41 @@ const input = tv({
 interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
     VariantProps<typeof input> {
-  icon?: ComponentType<SVGProps<SVGSVGElement>>;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 // https://www.material-tailwind.com/docs/html/input V2.3.2
-function Input({ className, size, icon, ...props }: InputProps) {
+function Input({ className, size, leftIcon, rightIcon, ...props }: InputProps) {
   const inputId = useId();
-  const [value, setValue] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const Icon = icon;
+  const RightIcon = rightIcon;
 
   return (
     <div className="w-full min-w-[200px]">
-      <div className="relative">
-        {Icon && (
-          <Icon
+      <div className="relative flex items-center">
+        {leftIcon && (
+          <div
             onClick={() => inputRef.current?.focus()}
             className="absolute w-5 h-5 top-2.5 left-2.5 text-slate-400 dark:text-gray-400"
-          />
+          >
+            {leftIcon}
+          </div>
         )}
 
         <input
           id={inputId}
-          className={cn("peer input", input({ className, size }))}
+          className={cn("peer", input({ className, size }))}
           {...props}
-          onChange={(e) => setValue(e.target.value)}
           ref={inputRef}
         />
+
+        {rightIcon && (
+          <div className="absolute right-1.5 text-slate-400 dark:text-gray-400">
+            {rightIcon}
+          </div>
+        )}
+
         {/* <label
           htmlFor={inputId}
           className={cn(

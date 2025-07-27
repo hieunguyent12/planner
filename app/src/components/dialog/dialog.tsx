@@ -1,4 +1,4 @@
-import { cn } from "@/utilts/cn";
+import { cn } from "@/utils/cn";
 import { Dialog as BaseDialog } from "@base-ui-components/react/dialog";
 
 type ModalProps = {

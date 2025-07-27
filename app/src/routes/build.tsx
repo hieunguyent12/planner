@@ -5,7 +5,7 @@ import { getStartingAndEndingCourseTimes } from "@/features/schedules/calendar/u
 import { SearchResult } from "@/features/schedules/search-course";
 import { SemesterSelect } from "@/features/schedules/semester-select";
 import type { ScheduleCourse } from "@/types";
-import { cn } from "@/utilts/cn";
+import { cn } from "@/utils/cn";
 import { createFileRoute } from "@tanstack/react-router";
 import { DateTime } from "luxon";
 import TablerX from "~icons/tabler/x";

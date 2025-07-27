@@ -1,4 +1,4 @@
-import { cn } from "@/utilts/cn";
+import { cn } from "@/utils/cn";
 import { Accordion as BaseAccordion } from "@base-ui-components/react/accordion";
 import { useState } from "react";
 

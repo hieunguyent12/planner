@@ -1,4 +1,4 @@
-import type { ScheduleCourse } from "@/types";
+import type { DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
 import { DateTime, Interval } from "luxon";
 
 const dateTimeOpts = {
@@ -6,13 +6,13 @@ const dateTimeOpts = {
 };
 
 export const getStartingAndEndingCourseTimes = (
-  courses: ScheduleCourse[],
-  extraRange = 1,
+  courseSections: DetailedCourseSectionSchemaType[],
+  extraRange = 1
 ) => {
-  if (courses.length === 0) {
+  if (courseSections.length === 0) {
     return Interval.fromDateTimes(
       DateTime.fromFormat("0:00", "H:mm", dateTimeOpts),
-      DateTime.fromFormat("24:00", "H:mm", dateTimeOpts),
+      DateTime.fromFormat("24:00", "H:mm", dateTimeOpts)
     );
   }
 
@@ -21,12 +21,12 @@ export const getStartingAndEndingCourseTimes = (
 
   let modified = false;
 
-  courses.forEach((course) => {
-    if (course.online) {
+  courseSections.forEach((section) => {
+    if (section.online) {
       return;
     }
 
-    course.meetings.forEach((meeting) => {
+    section.meetings.forEach((meeting) => {
       if (meeting.time.start < startingTime) {
         modified = true;
         startingTime = meeting.time.start;
@@ -43,7 +43,7 @@ export const getStartingAndEndingCourseTimes = (
     // this is to make sure that starting time is before ending time
     return Interval.fromDateTimes(
       DateTime.fromFormat("0:00", "H:mm", dateTimeOpts),
-      DateTime.fromFormat("23:00", "H:mm", dateTimeOpts),
+      DateTime.fromFormat("23:00", "H:mm", dateTimeOpts)
     );
   }
 
@@ -53,6 +53,6 @@ export const getStartingAndEndingCourseTimes = (
       : startingTime.minus({ hour: extraRange }).set({ minute: 0 }),
     endingTime.hour === 23
       ? endingTime
-      : endingTime.plus({ hour: extraRange }).set({ minute: 0 }),
+      : endingTime.plus({ hour: extraRange }).set({ minute: 1 }) // the `contains` method is inclusive at the start but not the end so we add an additional minute to it
   );
 };

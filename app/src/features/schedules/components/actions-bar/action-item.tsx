@@ -1,4 +1,4 @@
-import { cn } from "@/utilts/cn";
+import { cn } from "@/utils/cn";
 
 function ActionItem({
   children,

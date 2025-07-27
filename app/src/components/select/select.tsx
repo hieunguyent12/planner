@@ -1,6 +1,6 @@
 import { Select as _Select } from "@base-ui-components/react/select";
 import "./styles.css";
-import { cn } from "@/utilts/cn";
+import { cn } from "@/utils/cn";
 
 type SelectProps = {
   defaultValue: any;

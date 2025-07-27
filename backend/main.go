@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -75,6 +76,7 @@ func main() {
 
 	r := gin.Default()
 
+	r.Use(cors.Default())
 	r.Use(ErrorHandler())
 
 	r.GET("/ping", func(c *gin.Context) {
