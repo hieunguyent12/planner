@@ -2,21 +2,30 @@ import TablerSearch from "~icons/tabler/search";
 import { Input } from "@/components/input";
 import { SemesterSelect } from "../semester-select";
 import { SearchResults } from "./search-results";
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "@uidotdev/usehooks";
-import {
-  CoursesSchema,
-  type CoursesSchemaType,
-} from "@/features/schedules/schema";
 import { Spinner } from "@/components/spinner";
 import { FilterMenu } from "./filter-menu";
 import TablerX from "~icons/tabler/x";
+import { ScheduleContext } from "@/features/schedules/context";
+import { Button } from "@/components/button";
+import TablerPlus from "~icons/tabler/plus";
+import { useQuery } from "@tanstack/react-query";
+import TablerAlertCircleFilled from "~icons/tabler/alert-circle-filled";
 
 function SearchCourse() {
-  const [results, setResults] = useState<CoursesSchemaType>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const debouncedSearchValue = useDebounce(searchValue, 500);
+  const { schedule } = useContext(ScheduleContext);
+
+  // https://github.com/TanStack/query/discussions/2141
+  const searchQuery = useQuery({
+    queryKey: ["searchResults", debouncedSearchValue],
+    queryFn: () => schedule.fetchCourseSections(debouncedSearchValue),
+    enabled: !!debouncedSearchValue,
+    staleTime: Infinity, // prevents refetching
+    retry: 1,
+  });
 
   const [filter, setFilter] = useState({
     fitsSchedule: {
@@ -25,33 +34,10 @@ function SearchCourse() {
     },
   });
 
+  // reset search state when switching between different schedules
   useEffect(() => {
-    async function searchCatalogCourse() {
-      if (debouncedSearchValue !== "") {
-        setIsSearching(true);
-
-        const res = await fetch(
-          `http://localhost:8080/soc/searchByCode?code=${debouncedSearchValue}`
-        );
-
-        const courses = (await res.json()).courses.map((course: any) => ({
-          ...course,
-          sections: JSON.parse(course.sections),
-        }));
-
-        const { error, data } = CoursesSchema.safeParse(courses);
-
-        if (error) {
-          console.log(error);
-        } else {
-          setResults(data);
-          setIsSearching(false);
-        }
-      }
-    }
-
-    searchCatalogCourse();
-  }, [debouncedSearchValue]);
+    setSearchValue("");
+  }, [schedule]);
 
   const filterTags = useMemo(
     () =>
@@ -82,56 +68,114 @@ function SearchCourse() {
     [filter]
   );
 
-  return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mt-3 pb-1">
-        <p className="text-md font-medium text-primary-foreground">
-          Search Courses
-        </p>
-        <div className="flex items-center">
-          <SemesterSelect />
-        </div>
-      </div>
+  const renderResultContainer = () => {
+    if (searchValue == "") return null;
 
-      <div className="space-y-1">
-        <Input
-          placeholder="Example: MAC2302, ACG2010"
-          leftIcon={<TablerSearch />}
-          rightIcon={
-            <FilterMenu
-              className="size-7 rounded-md hover:bg-menu-indicator"
-              setFilter={setFilter}
-              filter={filter}
-            />
-          }
-          onChange={(e) => setSearchValue(e.target.value)}
-        />
-
-        {filterTags.length > 0 && (
-          <div className="flex items-start gap-2 mt-2">
-            <span className="text-sm">Filters: </span>
-            <div className="flex items-center flex-wrap gap-1">
-              {filterTags}
-            </div>
+    if (searchQuery.error || searchQuery.isLoadingError || searchQuery.isError)
+      return (
+        <div className="mt-2 space-y-2 flex flex-col items-center">
+          <div className="flex items-center gap-1 text-red-500">
+            <TablerAlertCircleFilled />
+            <p className="font-medium">There was an error fetching courses.</p>
           </div>
-        )}
-      </div>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-primary-foreground">
+              In the meantime, you can add courses manually.
+            </span>
+            <Button variant="outline" size="sm" className="px-2 gap-1">
+              <TablerPlus className="size-4" />
+              Add course
+            </Button>
+          </div>
+        </div>
+      );
 
-      {isSearching && (
+    if (searchQuery.isLoading) {
+      return (
         <div className="flex items-center gap-2 text-primary-foreground opacity-85 mt-3">
           <Spinner size={17} />
-          <span>Searching</span>
+          <span>Searching...</span>
         </div>
-      )}
+      );
+    }
 
-      {results.length > 0 && (
-        <>
-          <p className="my-1">{results.length} results</p>
-          <div className="mt-2 max-h-[calc(100vh-278px)] overflow-y-auto ">
-            <SearchResults results={results} />
+    if (!searchQuery.data) return null;
+
+    if (searchQuery.data && searchQuery.data.length === 0) {
+      return (
+        <div className="mt-2 space-y-2 flex flex-col items-center">
+          <p>No courses found matching your search.</p>
+          <div className="flex flex-col gap-2">
+            <span className="text-sm text-primary-foreground">
+              Can't find your course?
+            </span>
+            <Button variant="outline" size="sm" className="px-2 gap-1">
+              <TablerPlus className="size-4" />
+              Add it manually
+            </Button>
           </div>
-        </>
-      )}
+        </div>
+      );
+    }
+
+    return (
+      <div>
+        <div className="flex items-center justify-between text-primary-foreground">
+          <p className="my-1">{searchQuery.data.length} results</p>
+          <button
+            onClick={() => {
+              setSearchValue("");
+            }}
+            className="mr-2"
+          >
+            Clear
+          </button>
+        </div>
+        <div className="mt-2 max-h-[calc(100vh-278px)] overflow-y-auto scrollbar">
+          <SearchResults results={searchQuery.data} />
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col justify-between w-full h-[92%]">
+      <div>
+        <div className="flex items-center justify-between pb-1">
+          <p className="text-md font-medium text-primary-foreground">
+            Search Courses
+          </p>
+          <div className="flex items-center">
+            <SemesterSelect />
+          </div>
+        </div>
+        <div className="space-y-1">
+          <Input
+            placeholder="Example: MAC2302, ACG2010"
+            leftIcon={<TablerSearch />}
+            rightIcon={
+              <FilterMenu
+                className="size-7 rounded-md hover:bg-menu-indicator"
+                setFilter={setFilter}
+                filter={filter}
+              />
+            }
+            onChange={(e) => setSearchValue(e.target.value)}
+            value={searchValue}
+            className="w-full"
+          />
+
+          {filterTags.length > 0 && (
+            <div className="flex items-start gap-2 mt-2">
+              <span className="text-sm">Filters: </span>
+              <div className="flex items-center flex-wrap gap-1">
+                {filterTags}
+              </div>
+            </div>
+          )}
+        </div>
+        {renderResultContainer()}
+      </div>
     </div>
   );
 }

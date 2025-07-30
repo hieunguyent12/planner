@@ -1,22 +1,25 @@
+import { useTheme } from "@/components/theme";
 import { ScheduleContext } from "@/features/schedules/context";
-import type { DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
+import type { OnlineCourseSection } from "@/features/schedules/schedule";
 import { useContext } from "react";
 import TablerDeviceLaptop from "~icons/tabler/device-laptop";
 import TablerX from "~icons/tabler/x";
 
 type OnlineSectionProps = {
-  courseSections: DetailedCourseSectionSchemaType[];
+  onlineSections: OnlineCourseSection[];
   isRemovable?: boolean;
 };
 const OnlineSection = ({
-  courseSections,
+  onlineSections,
   isRemovable = true,
 }: OnlineSectionProps) => {
-  const onlineClasses = courseSections.filter((c) => c.online);
   const scheduleContext = useContext(ScheduleContext);
+  const { theme } = useTheme();
+
+  const isDarkTheme = theme === "dark" || theme === "system";
 
   return (
-    onlineClasses.length > 0 && (
+    onlineSections.length > 0 && (
       <div className="flex w-full text-sm">
         <div
           // className="text-[10px] sm:text-xs text-muted-foreground"
@@ -28,7 +31,12 @@ const OnlineSection = ({
           <TablerDeviceLaptop />
         </div>
         <div className="grow-1">
-          {onlineClasses.map((c) => {
+          {onlineSections.map((c) => {
+            const backgroundColor = isDarkTheme ? "#2B2B2B" : c.color.bg;
+            const backgroundHoverColor = isDarkTheme
+              ? "#292929"
+              : c.color.hover;
+
             return (
               <div
                 key={c.id}
@@ -37,13 +45,14 @@ const OnlineSection = ({
                 <div
                   className="flex absolute w-full h-full cursor-pointer z-50"
                   style={{
-                    backgroundColor: c.color.bg,
+                    backgroundColor,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = c.color.hover;
+                    e.currentTarget.style.backgroundColor =
+                      backgroundHoverColor;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = c.color.bg;
+                    e.currentTarget.style.backgroundColor = backgroundColor;
                   }}
                 >
                   <div

@@ -7,8 +7,9 @@ const input = tv({
   base: "input",
   variants: {
     size: {
-      sm: "py-1.5 px-3",
-      md: "py-2 pr-9 pl-9",
+      base: "",
+      sm: "py-1.5",
+      md: "py-2 px-2",
       lg: "py-3",
     },
   },
@@ -29,34 +30,38 @@ interface InputProps
 function Input({ className, size, leftIcon, rightIcon, ...props }: InputProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const RightIcon = rightIcon;
 
   return (
-    <div className="w-full min-w-[200px]">
-      <div className="relative flex items-center">
-        {leftIcon && (
-          <div
-            onClick={() => inputRef.current?.focus()}
-            className="absolute w-5 h-5 top-2.5 left-2.5 text-slate-400 dark:text-gray-400"
-          >
-            {leftIcon}
-          </div>
+    <div className="relative flex items-center w-full">
+      {leftIcon && (
+        <div
+          onClick={() => inputRef.current?.focus()}
+          className="absolute w-5 h-5 top-2.5 left-2.5 text-slate-400 dark:text-gray-400"
+        >
+          {leftIcon}
+        </div>
+      )}
+
+      <input
+        id={inputId}
+        className={cn(
+          "peer",
+          input({
+            size,
+            className: cn(className, leftIcon && "pl-9", rightIcon && "pr-9"),
+          })
         )}
+        {...props}
+        ref={inputRef}
+      />
 
-        <input
-          id={inputId}
-          className={cn("peer", input({ className, size }))}
-          {...props}
-          ref={inputRef}
-        />
+      {rightIcon && (
+        <div className="absolute right-1.5 text-slate-400 dark:text-gray-400">
+          {rightIcon}
+        </div>
+      )}
 
-        {rightIcon && (
-          <div className="absolute right-1.5 text-slate-400 dark:text-gray-400">
-            {rightIcon}
-          </div>
-        )}
-
-        {/* <label
+      {/* <label
           htmlFor={inputId}
           className={cn(
             "bg-white dark:bg-menu left-2.5 top-2.5 px-1 text-sm text-slate-400 dark:text-gray-400 cursor-text absolute transition-[top,left,scale] transform origin-left peer-focus:text-sky-600 select-none",
@@ -67,7 +72,6 @@ function Input({ className, size, leftIcon, rightIcon, ...props }: InputProps) {
         >
           Type Here...
         </label> */}
-      </div>
     </div>
   );
 }

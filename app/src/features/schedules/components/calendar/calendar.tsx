@@ -162,6 +162,15 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     timeIntervalToRender =
       timeIntervalToRender || getStartingAndEndingCourseTimes(courseSections);
 
+    const onlineSections = courseSections.filter((c) => c.online);
+
+    if (
+      onlineSections.length === courseSections.length &&
+      courseSections.length > 0
+    ) {
+      timeIntervalToRender = undefined;
+    }
+
     return (
       <div
         className="text-primary-foreground"
@@ -184,7 +193,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           />
         </div>
 
-        <OnlineSection courseSections={courseSections} />
+        <OnlineSection onlineSections={onlineSections} />
       </div>
     );
   }

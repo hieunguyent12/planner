@@ -10,12 +10,6 @@ const luxonDateTimeOptions = {
   zone: "utc",
 };
 
-const color = {
-  bg: "#fff7ed",
-  hover: "#ffedd4",
-  side: "#ffb86a",
-};
-
 export const BaseCourseSchema = z.object({
   id: z.number(),
   code: z.string("Course code must be defined."),
@@ -92,11 +86,6 @@ export const CourseSectionSchema = z.discriminatedUnion("online", [
 export const CourseSchema = BaseCourseSchema.extend({
   // a course can have multiple sections, each with possible different meeting times and instructors
   sections: z.array(CourseSectionSchema),
-}).transform((data) => {
-  return {
-    ...data,
-    color,
-  };
 });
 
 // a particular course section that also includes the course information like course code and name.

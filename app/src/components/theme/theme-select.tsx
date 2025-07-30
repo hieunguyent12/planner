@@ -1,5 +1,6 @@
 import { useTheme, type Theme } from "./theme-provider";
-import { CheckIcon, Select, SelectItem } from "@/components/select";
+import { Select, SelectItem } from "@/components/select";
+import TablerCheck from "~icons/tabler/check";
 
 // https://base-ui.com/react/components/select
 export function ThemeSelect() {
@@ -8,7 +9,7 @@ export function ThemeSelect() {
   return (
     <Select
       placeholder={theme}
-      defaultValue={theme}
+      value={theme}
       onValueChange={(value) => {
         setTheme(value as Theme);
       }}
@@ -17,17 +18,17 @@ export function ThemeSelect() {
       <SelectItem
         value="dark"
         text="Dark"
-        indicator={<CheckIcon className="size-3" />}
+        indicator={<TablerCheck className="size-3.5" />}
       />
       <SelectItem
         value="light"
         text="Light"
-        indicator={<CheckIcon className="size-3" />}
+        indicator={<TablerCheck className="size-3.5" />}
       />
       <SelectItem
         value="system"
         text="System"
-        indicator={<CheckIcon className="size-3" />}
+        indicator={<TablerCheck className="size-3.5" />}
       />
     </Select>
   );

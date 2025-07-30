@@ -1,30 +1,53 @@
-import type {
-  BaseCourseSchema,
-  BaseCourseSectionSchema,
-  DetailedCourseSectionSchemaType,
-  InPersonCourseSectionSchema,
-  MeetingSchemaType,
-  OnlineCourseSectionSchema,
+import {
+  CoursesSchema,
+  type BaseCourseSchema,
+  type BaseCourseSectionSchema,
+  type CoursesSchemaType,
+  type DetailedCourseSectionSchemaType,
+  type InPersonCourseSectionSchema,
+  type MeetingSchemaType,
+  type OnlineCourseSectionSchema,
 } from "@/features/schedules/schema";
 import { Store } from "@/features/schedules/store";
 import type z from "zod";
+import { colors } from "./colors";
+import { fetchCourseSections as apiFetchCourseSections } from "@/features/schedules/api";
 
 export type SemesterType = {
   year: number;
-  season: "Fall" | "Spring" | "Summer";
+  season: "fall" | "spring" | "summer";
 };
 
 export class Schedule extends Store {
   courseSections: DetailedCourseSectionSchemaType[] = [];
-  semester!: SemesterType;
+  name!: string;
+  id!: number;
+  credits: string = "0";
+  semester: SemesterType = {
+    year: 2025,
+    season: "fall",
+  };
+  private availableColors = [...colors];
 
-  constructor(courseSections: DetailedCourseSectionSchemaType[]) {
+  constructor(
+    courseSections: DetailedCourseSectionSchemaType[],
+    id: number,
+    name?: string
+  ) {
     super();
     this.courseSections = courseSections;
+    this.name = name ?? `Schedule #${id}`;
+    this.id = id;
   }
 
   getSnapshot() {
     return this.courseSections;
+  }
+
+  setName(newName: string) {
+    if (newName !== "") {
+      this.name = newName;
+    }
   }
 
   getCourseSections(): DetailedCourseSectionSchemaType[] {
@@ -39,14 +62,55 @@ export class Schedule extends Store {
     }
 
     this.courseSections = [...this.courseSections, section];
+    this.credits = this.calculateTotalCredits();
+
+    const randomColorIdx = Math.floor(
+      Math.random() * this.availableColors.length
+    );
+    const color = this.availableColors[randomColorIdx];
+    this.availableColors.splice(randomColorIdx, 1);
+
+    section.setColor(color);
+
     this.notifySubscribers();
     return true;
+  }
+
+  canAddSection(sectionToAdd: DetailedCourseSectionSchemaType):
+    | {
+        success: false;
+        reason: "duplicate" | "conflict";
+        conflicts?: InPersonCourseSection[];
+      }
+    | { success: true } {
+    const conflicts: InPersonCourseSection[] = [];
+
+    for (const section of this.courseSections) {
+      if (section.code === sectionToAdd.code) {
+        return { success: false, reason: "duplicate" };
+      }
+
+      if (section.online || sectionToAdd.online) continue;
+
+      if (section.overlaps(sectionToAdd)) {
+        conflicts.push(section as InPersonCourseSection);
+      }
+    }
+
+    if (conflicts.length > 0) {
+      return { success: false, reason: "conflict", conflicts };
+    }
+
+    return { success: true };
   }
 
   removeCourseSection(sectionToRemove: DetailedCourseSectionSchemaType) {
     this.courseSections = this.courseSections.filter(
       (section) => section != sectionToRemove
     );
+
+    this.credits = this.calculateTotalCredits();
+    this.availableColors.push(sectionToRemove.color);
     this.notifySubscribers();
   }
 
@@ -56,6 +120,40 @@ export class Schedule extends Store {
 
   setSemester(newSemester: SemesterType) {
     this.semester = newSemester;
+  }
+
+  private calculateTotalCredits(): string {
+    let totalCredits = 0;
+    for (const section of this.courseSections) {
+      if (typeof section.credits === "string") {
+        return "VAR";
+      }
+
+      totalCredits += section.credits;
+    }
+
+    return totalCredits.toString();
+  }
+
+  async fetchCourseSections(code: string): Promise<CoursesSchemaType> {
+    const res = await apiFetchCourseSections(code);
+
+    if (!res.courses) {
+      return [];
+    }
+
+    const courses = res.courses.map((course: any) => ({
+      ...course,
+      sections: JSON.parse(course.sections),
+    }));
+
+    const { error, data } = CoursesSchema.safeParse(courses);
+
+    if (error) {
+      throw error;
+    }
+
+    return data;
   }
 
   static isValid(courseSections: DetailedCourseSectionSchemaType[]): boolean {
@@ -91,18 +189,16 @@ export abstract class CourseSection
   course_number!: number;
   credits!: number | string;
   instructors!: string[];
-  color: any;
+  color!: any;
 
   constructor(props: any) {
     Object.assign(this, props);
-    this.color = {
-      bg: "#fff7ed",
-      hover: "#ffedd4",
-      side: "#ffb86a",
-    };
   }
 
   abstract overlaps(other: CourseSection): boolean;
+  setColor(newColor: any) {
+    this.color = newColor;
+  }
 }
 
 export class InPersonCourseSection
@@ -148,7 +244,7 @@ export class OnlineCourseSection
     super(props);
   }
 
-  overlaps(_: CourseSection): boolean {
+  overlaps(_: OnlineCourseSection): boolean {
     return false;
   }
 }

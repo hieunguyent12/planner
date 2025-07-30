@@ -1,47 +1,35 @@
-import { Select, SelectItem } from "@/components/select";
+import { Select } from "@/components/select";
+import { SchedulesManagerContext } from "@/features/schedules/context";
+import { useContext } from "react";
+import TablerCheck from "~icons/tabler/check";
 
 function ScheduleSelect() {
+  const { schedulesManager } = useContext(SchedulesManagerContext);
+
+  const selectedSchedule = schedulesManager.getSelectedSchedule();
+
+  const schedules = schedulesManager.getAllSchedules().map((schedule) => {
+    return {
+      label: schedule.name,
+      value: schedule.id,
+    };
+  });
+
   return (
     <div>
       <Select
-        placeholder={"aa"}
-        defaultValue={"theme"}
+        items={schedules}
+        value={selectedSchedule.id}
         onValueChange={(value) => {
-          // setTheme(value as Theme);
+          // TODO: refactor this
+          schedulesManager.onSetSelectedSchedule(
+            schedulesManager.getScheduleById(value)!
+          );
         }}
+        indicator={<TablerCheck className="size-3.5" />}
         className="w-40 text-base"
-      >
-        <SelectItem
-          value="dark"
-          text="Dark"
-          indicator={<CheckIcon className="size-3" />}
-        />
-        <SelectItem
-          value="light"
-          text="Light"
-          indicator={<CheckIcon className="size-3" />}
-        />
-        <SelectItem
-          value="system"
-          text="System"
-          indicator={<CheckIcon className="size-3" />}
-        />
-      </Select>
+      />
     </div>
-  );
-}
-
-function CheckIcon(props: React.ComponentProps<"svg">) {
-  return (
-    <svg
-      fill="currentcolor"
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
-      {...props}
-    >
-      <path d="M9.1603 1.12218C9.50684 1.34873 9.60427 1.81354 9.37792 2.16038L5.13603 8.66012C5.01614 8.8438 4.82192 8.96576 4.60451 8.99384C4.3871 9.02194 4.1683 8.95335 4.00574 8.80615L1.24664 6.30769C0.939709 6.02975 0.916013 5.55541 1.19372 5.24822C1.47142 4.94102 1.94536 4.91731 2.2523 5.19524L4.36085 7.10461L8.12299 1.33999C8.34934 0.993152 8.81376 0.895638 9.1603 1.12218Z" />
-    </svg>
   );
 }
 

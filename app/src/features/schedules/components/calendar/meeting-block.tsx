@@ -1,3 +1,4 @@
+import { useTheme } from "@/components/theme";
 import { ScheduleContext } from "@/features/schedules/context";
 import type { InPersonCourseSection } from "@/features/schedules/schedule";
 import type { MeetingSchemaType } from "@/features/schedules/schema";
@@ -22,6 +23,7 @@ const MeetingBlock = ({
     "minutes",
   ]);
   const scheduleContext = useContext(ScheduleContext);
+  const { theme } = useTheme();
 
   /** Scenarios for times:
       8:00 - 10:25 - no margin top; change height
@@ -33,19 +35,28 @@ const MeetingBlock = ({
   const height = 76 * (meetingLength.hours + meetingLength.minutes / 60) - 1;
   const marginTop = (meeting.time.start.minute / 60) * 76;
 
+  const isDarkTheme = theme === "dark" || theme === "system";
+  const backgroundColor = isDarkTheme ? "#2B2B2B" : courseSection.color.bg;
+  const backgroundHoverColor = isDarkTheme
+    ? "#292929"
+    : courseSection.color.hover;
+
   return (
     <div
       className="flex absolute w-full cursor-pointer z-2 overflow-y-hidden group"
       style={{
         marginTop: `${marginTop}px`,
         height: `${height}px`,
-        backgroundColor: courseSection.color.bg,
+        color: isDarkTheme
+          ? courseSection.color.bg
+          : `var(--primary-foreground)`,
+        backgroundColor,
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = courseSection.color.hover;
+        e.currentTarget.style.backgroundColor = backgroundHoverColor;
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = courseSection.color.bg;
+        e.currentTarget.style.backgroundColor = backgroundColor;
       }}
     >
       <div
@@ -54,7 +65,7 @@ const MeetingBlock = ({
           backgroundColor: courseSection.color.side,
         }}
       ></div>
-      <div className="w-full text-primary-foreground relative">
+      <div className="w-full relative">
         {isRemovable && (
           <button
             onClick={() => scheduleContext.onRemoveSection(courseSection)}

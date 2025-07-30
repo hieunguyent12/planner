@@ -85,11 +85,6 @@ function SearchResults({ results }: { results: CoursesSchemaType }) {
       description: course.description,
       name: course.name,
       prerequisites: course.prerequisites,
-      color: {
-        bg: "#fff7ed",
-        hover: "#ffedd4",
-        side: "#ffb86a",
-      },
     });
 
     if (error) {
@@ -110,7 +105,7 @@ function SearchResults({ results }: { results: CoursesSchemaType }) {
                 <>
                   <div className="text-primary-foreground relative">
                     <div className="flex items-center">
-                      <p className="text-primary-foreground text-sm bg-orange-100 dark:bg-orange-900 rounded-md px-1 font-medium">
+                      <p className="text-primary-foreground text-sm bg-container-content-bg/25 border-1 border-primary-border rounded-md px-1 font-medium">
                         {result.code}
                       </p>
                     </div>

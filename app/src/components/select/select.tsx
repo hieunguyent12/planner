@@ -3,12 +3,15 @@ import "./styles.css";
 import { cn } from "@/utils/cn";
 
 type SelectProps = {
-  defaultValue: any;
-  placeholder: React.ReactNode;
-  children: React.ReactNode;
+  defaultValue?: any;
+  placeholder?: React.ReactNode;
+  children?: React.ReactNode;
   className?: string;
   popUpClassname?: string;
+  value?: any;
 
+  items?: any;
+  indicator?: any;
   onValueChange?: (val: any) => void;
 };
 
@@ -20,14 +23,31 @@ export function Select({
   onValueChange,
   className,
   popUpClassname,
+  value,
+  items,
+  indicator,
 }: SelectProps) {
   return (
     <_Select.Root
+      value={value}
       onValueChange={(value) => onValueChange?.(value)}
       defaultValue={defaultValue}
+      items={items}
     >
       <_Select.Trigger className={cn("select-trigger h-7", className)}>
-        <_Select.Value className="capitalize" placeholder={placeholder} />
+        {/* Temporary fix. Can't tell if this is a bug from their end or something wrong with my code */}
+        {items ? (
+          <_Select.Value className="capitalize">
+            {(val) => {
+              const selectedItem = items?.find(
+                (item: any) => item.value === val
+              );
+              return selectedItem?.label;
+            }}
+          </_Select.Value>
+        ) : (
+          <_Select.Value className="capitalize" />
+        )}
         <_Select.Icon className="flex">
           <ChevronUpDownIcon className="text-menu-foreground ml-1" />
         </_Select.Icon>
@@ -45,7 +65,22 @@ export function Select({
               popUpClassname
             )}
           >
-            {children}
+            {items
+              ? items.map(({ label, value }: any) => (
+                  <_Select.Item
+                    key={`${label}-${value}`}
+                    value={value}
+                    className="select-item"
+                  >
+                    <_Select.ItemIndicator className="col-start-1">
+                      {indicator}
+                    </_Select.ItemIndicator>
+                    <_Select.ItemText className="col-start-2">
+                      {label}
+                    </_Select.ItemText>
+                  </_Select.Item>
+                ))
+              : children}
           </_Select.Popup>
           <_Select.ScrollDownArrow className="bottom-0 z-[1] flex h-4 w-full cursor-default items-center justify-center rounded-md bg-[canvas] text-center text-xs before:absolute before:top-[-100%] before:left-0 before:h-full before:w-full before:content-[''] data-[direction=down]:bottom-0 data-[direction=down]:before:bottom-[-100%]" />
         </_Select.Positioner>
