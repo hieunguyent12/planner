@@ -9,7 +9,7 @@ import { OnlineSection } from "./online-section";
 import "./styles.css";
 import clsx from "clsx";
 import { DateTime, Interval } from "luxon";
-import type { DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
+import { type DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
 import { getStartingAndEndingCourseTimes } from "@/features/schedules/components/calendar/utils";
 import type { InPersonCourseSection } from "@/features/schedules/schedule";
 
@@ -44,7 +44,7 @@ const Header = ({ timeIntervalToRender, tiny }: HeaderProps) => {
   );
 };
 
-const dayMap = {
+export const dayMap = {
   Mon: "M",
   Tue: "T",
   Wed: "W",

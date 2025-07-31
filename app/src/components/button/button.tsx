@@ -13,7 +13,7 @@ export interface ButtonProps extends React.ComponentPropsWithoutRef<"button"> {
 }
 
 export const button = tv({
-  base: "inline-flex cursor-pointer items-center justify-center rounded-md font-medium focus:outline-none",
+  base: "inline-flex cursor-pointer items-center justify-center rounded-md font-medium focus:outline-none disabled:cursor-not-allowed",
   variants: {
     variant: {
       skeleton: "",

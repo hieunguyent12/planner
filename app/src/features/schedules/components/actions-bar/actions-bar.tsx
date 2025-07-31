@@ -82,10 +82,6 @@ export function ActionsBar() {
             Can't find your course?
           </span>
           <AddCourseDialog label="Add it manually" />
-          {/* <Button variant="outline" size="sm" className="px-2 gap-1">
-            <TablerPlus className="size-4" />
-            Add it manually
-          </Button> */}
         </div>
       </div>
     </>

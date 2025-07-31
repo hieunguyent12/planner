@@ -5,21 +5,29 @@ import {
 import { DateTime, Interval } from "luxon";
 import z from "zod";
 
-const luxonFormatString = "h:mm a";
-const luxonDateTimeOptions = {
+export const luxonFormatString = "h:mm a";
+export const luxonDateTimeOptions = {
   zone: "utc",
 };
 
+export const dayMap = {
+  Mon: "M",
+  Tue: "T",
+  Wed: "W",
+  Thurs: "R",
+  Fri: "F",
+} as const;
+
 export const BaseCourseSchema = z.object({
-  id: z.number(),
-  code: z.string("Course code must be defined."),
-  name: z.string("Course must have a name."),
+  id: z.number().or(z.string()),
+  code: z.string("Course code must be defined.").min(1),
+  name: z.string("Course must have a name.").min(1),
   description: z.string().optional(),
   prerequisites: z.string().optional(),
 });
 
 export const BaseCourseSectionSchema = z.object({
-  course_number: z.number(),
+  course_number: z.number().or(z.string()),
   credits: z.number().or(z.string()),
   instructors: z.array(z.string()),
 });
@@ -29,10 +37,15 @@ export const MeetingSchema = z.object({
     .object({
       building: z.string(),
       room: z.string(),
+      display: z.string().optional(),
     })
     .transform((data) => ({
       ...data,
-      display: `${data.building} ${data.room}`,
+      display: data.display
+        ? data.display
+        : data.building === "" && data.room === ""
+        ? ""
+        : `${data.building} ${data.room}`,
     })),
   time: z
     .object({

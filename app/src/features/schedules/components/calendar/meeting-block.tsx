@@ -89,16 +89,18 @@ const MeetingBlock = ({
               {meeting.time.display}
             </span>
           </div>
-          <div className="flex items-center">
-            {!compact && (
-              <span className="text-destructive hidden pr-1 sm:block text-xs">
-                📍
+          {meeting.location && meeting.location.display !== "" && (
+            <div className="flex items-center">
+              {!compact && (
+                <span className="text-destructive hidden pr-1 sm:block text-xs">
+                  📍
+                </span>
+              )}
+              <span className="text-[11px] pl-1 sm:pl-0 sm:text-sm">
+                {meeting.location.display}
               </span>
-            )}
-            <span className="text-[11px] pl-1 sm:pl-0 sm:text-sm">
-              {meeting.location.display}
-            </span>
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
