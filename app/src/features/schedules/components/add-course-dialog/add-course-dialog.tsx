@@ -5,6 +5,7 @@ import { Input } from "@/components/input";
 import {
   dayMap,
   DetailedCourseSectionSchema,
+  reverseDayMap,
 } from "@/features/schedules/schema";
 import { cn } from "@/utils/cn";
 import { useContext, useEffect, useState } from "react";
@@ -53,6 +54,7 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
   const [isOnline, setIsOnline] = useState(false);
 
   const [meetings, setMeetings] = useState<any[]>([]);
+  const [isError, setIsError] = useState(false);
 
   const onCreateCourse = () => {
     const { error, data } = DetailedCourseSectionSchema.safeParse({
@@ -60,14 +62,32 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
       code,
       name,
       online: isOnline,
-      meetings,
+      meetings: meetings.map((meeting) => {
+        const start = meeting.time.start;
+        const end = meeting.time.end;
+        return {
+          ...meeting,
+          time: {
+            days: meeting.time.days.map(
+              (day: string) => dayMap[day as keyof typeof dayMap]
+            ),
+            start: `${start.hour === "" ? "8" : start.hour}:${
+              start.minute === "" ? "00" : start.minute
+            } ${start.meridiem}`,
+            end: `${end.hour === "" ? "9" : end.hour}:${
+              end.minute === "" ? "00" : end.minute
+            } ${end.meridiem}`,
+          },
+        };
+      }),
       course_number: nanoid(),
       credits: credits === "VAR" ? credits : parseInt(credits),
       instructors: [],
     });
 
     if (error) {
-      throw error;
+      setIsError(true);
+      return;
     }
 
     schedule.addCourseSection(data);
@@ -153,19 +173,23 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
         <div
           className={cn("flex flex-col space-y-1", isOnline && "opacity-50")}
         >
-          {meetings.length > 0 && <span>Meetings:</span>}
+          {!isOnline && (
+            <>
+              {meetings.length > 0 && <span>Meetings:</span>}
 
-          <div className="space-y-2">
-            {meetings.map((meeting, i) => (
-              <CustomMeeting
-                key={meeting.id}
-                idx={i}
-                meeting={meeting}
-                onUpdateMeeting={(updated) => onUpdateMeeting(updated, i)}
-                onRemoveMeeting={() => onRemoveMeeting(i)}
-              />
-            ))}
-          </div>
+              <div className="space-y-2">
+                {meetings.map((meeting, i) => (
+                  <CustomMeeting
+                    key={meeting.id}
+                    idx={i}
+                    meeting={meeting}
+                    onUpdateMeeting={(updated) => onUpdateMeeting(updated, i)}
+                    onRemoveMeeting={() => onRemoveMeeting(i)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
 
           <Button
             onClick={onCreateMeeting}
@@ -178,6 +202,14 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
           </Button>
         </div>
 
+        {isError && (
+          <div>
+            <p className="text-red-500">
+              There was an error creating your course. Make sure all required
+              fields are filled out!
+            </p>
+          </div>
+        )}
         <div className="flex items-center gap-1 mt-3">
           <Button
             onClick={toggle}
@@ -207,21 +239,27 @@ export function CustomMeeting({
   onUpdateMeeting?: (meeting: any) => void;
   meeting: any;
 }) {
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
-  const [startTime, setStartTime] = useState({
-    hour: "",
-    minute: "",
-    meridiem: "AM",
+  const [selectedDays, setSelectedDays] = useState<string[]>(() => {
+    return meeting.time?.days ?? [];
   });
 
-  const [endTime, setEndTime] = useState({
-    hour: "",
-    minute: "",
-    meridiem: "AM",
-  });
+  const [startTime, setStartTime] = useState(
+    meeting.time?.start ?? {
+      hour: "",
+      minute: "",
+      meridiem: "AM",
+    }
+  );
 
-  const [location, setLocation] = useState("");
+  const [endTime, setEndTime] = useState(
+    meeting.time?.end ?? {
+      hour: "",
+      minute: "",
+      meridiem: "AM",
+    }
+  );
+
+  const [location, setLocation] = useState(meeting.location?.display ?? "");
   const [instructor, setInstructor] = useState("");
 
   useEffect(() => {
@@ -233,13 +271,22 @@ export function CustomMeeting({
         display: `${location}`,
       },
       time: {
-        days: selectedDays.map((day) => dayMap[day as keyof typeof dayMap]),
-        start: `${startTime.hour === "" ? "8" : startTime.hour}:${
-          startTime.minute === "" ? "00" : startTime.minute
-        } ${startTime.meridiem}`,
-        end: `${endTime.hour === "" ? "9" : endTime.hour}:${
-          endTime.minute === "" ? "00" : endTime.minute
-        } ${endTime.meridiem}`,
+        days: selectedDays,
+        start: startTime,
+        end: endTime,
+        // days: selectedDays.map((day) => dayMap[day as keyof typeof dayMap]),
+        // start:
+        //   typeof startTime === "string"
+        //     ? startTime
+        //     : `${startTime.hour === "" ? "8" : startTime.hour}:${
+        //         startTime.minute === "" ? "00" : startTime.minute
+        //       } ${startTime.meridiem}`,
+        // end:
+        //   typeof endTime === "string"
+        //     ? endTime
+        //     : `${endTime.hour === "" ? "9" : endTime.hour}:${
+        //         endTime.minute === "" ? "00" : endTime.minute
+        //       } ${endTime.meridiem}`,
       },
     });
   }, [selectedDays, startTime, endTime, location, instructor]);

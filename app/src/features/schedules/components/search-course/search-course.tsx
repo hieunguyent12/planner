@@ -12,6 +12,7 @@ import { Button } from "@/components/button";
 import TablerPlus from "~icons/tabler/plus";
 import { useQuery } from "@tanstack/react-query";
 import TablerAlertCircleFilled from "~icons/tabler/alert-circle-filled";
+import { AddCourseDialog } from "@/features/schedules/components/add-course-dialog";
 
 function SearchCourse() {
   const [searchValue, setSearchValue] = useState("");
@@ -82,10 +83,9 @@ function SearchCourse() {
             <span className="text-sm text-primary-foreground">
               In the meantime, you can add courses manually.
             </span>
-            <Button variant="outline" size="sm" className="px-2 gap-1">
-              <TablerPlus className="size-4" />
-              Add course
-            </Button>
+            <div className="flex justify-center">
+              <AddCourseDialog label="Add course" />
+            </div>
           </div>
         </div>
       );

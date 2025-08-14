@@ -37,7 +37,7 @@ export function Select({
       <_Select.Trigger className={cn("select-trigger h-7", className)}>
         {/* Temporary fix. Can't tell if this is a bug from their end or something wrong with my code */}
         {items ? (
-          <_Select.Value className="capitalize">
+          <_Select.Value>
             {(val) => {
               const selectedItem = items?.find(
                 (item: any) => item.value === val
@@ -46,7 +46,7 @@ export function Select({
             }}
           </_Select.Value>
         ) : (
-          <_Select.Value className="capitalize" />
+          <_Select.Value />
         )}
         <_Select.Icon className="flex">
           <ChevronUpDownIcon className="text-menu-foreground ml-1" />

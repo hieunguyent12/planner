@@ -18,6 +18,14 @@ export const dayMap = {
   Fri: "F",
 } as const;
 
+export const reverseDayMap = {
+  M: "Mon",
+  T: "Tue",
+  W: "Wed",
+  R: "Thurs",
+  F: "Fri",
+} as const;
+
 export const BaseCourseSchema = z.object({
   id: z.number().or(z.string()),
   code: z.string("Course code must be defined.").min(1),
@@ -49,7 +57,9 @@ export const MeetingSchema = z.object({
     })),
   time: z
     .object({
-      days: z.array(z.enum(["M", "T", "W", "R", "F"])),
+      days: z
+        .array(z.enum(["M", "T", "W", "R", "F"]))
+        .min(1, "In person courses must have at least 1 day"),
       start: z
         .union([
           z.string(),
