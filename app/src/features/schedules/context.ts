@@ -10,11 +10,12 @@ export const ScheduleContext = createContext<{
 }>(undefined!);
 
 export interface SchedulesManager {
-  onSetSelectedSchedule: Dispatch<React.SetStateAction<Schedule>>;
+  onSetSelectedSchedule: (scheduleIdx: number) => void;
   onAddSchedule: (newScheduleName: string) => void;
   onRemoveSchedule: (schedule: Schedule) => void;
   getSelectedSchedule: () => Schedule;
   getScheduleById: (id: number) => Schedule | undefined;
+  getScheduleByIndexId: (id: number) => number;
   getAllSchedules: () => Schedule[];
 }
 

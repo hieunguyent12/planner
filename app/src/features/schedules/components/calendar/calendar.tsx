@@ -20,6 +20,8 @@ type CalendarProps = {
   compact?: boolean;
   tiny?: boolean;
   onBlockSelected?: (block: ScheduleBlock) => void;
+  onHandleClick?: () => void;
+  handle?: React.ReactNode;
 };
 
 type HeaderProps = {
@@ -156,6 +158,8 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       compact,
       tiny,
       onBlockSelected,
+      onHandleClick,
+      handle,
     },
     ref
   ) => {
@@ -182,7 +186,12 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
           className={clsx("calendar-grid w-full text-sm", tiny && "tiny")}
           ref={ref}
         >
-          <div className="border-b-1 border-calendar-border shadow-xs"></div>
+          <div
+            onClick={() => onHandleClick?.()}
+            className="relative border-1 border-calendar-border shadow-xs flex justify-center items-center hover:cursor-pointer hover:bg-primary-hover"
+          >
+            {handle}
+          </div>
           <Header timeIntervalToRender={timeIntervalToRender} tiny={tiny} />
           <Blocks
             courseSections={courseSections}

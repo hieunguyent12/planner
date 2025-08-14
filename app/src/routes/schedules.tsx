@@ -1,8 +1,18 @@
-import { createFileRoute } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  useLocation,
+  useSearch,
+} from "@tanstack/react-router";
 import { SearchCourse } from "@/features/schedules/components/search-course";
 import { Container } from "@/components/container";
 import { Calendar } from "@/features/schedules/components/calendar";
-import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import type { DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
 import {
   InPersonCourseSection,
@@ -18,37 +28,84 @@ import {
 import { Dialog } from "@/components/dialog";
 import { Button } from "@/components/button";
 import TablerAlertCircleFilled from "~icons/tabler/alert-circle-filled";
+import TablerPictureInPictureOff from "~icons/tabler/picture-in-picture-off";
+
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 export const Route = createFileRoute("/schedules")({
+  validateSearch: (
+    search: Record<string, unknown>
+  ): { fullscreen?: number } => {
+    return {
+      fullscreen: Number.isInteger(search?.fullscreen)
+        ? Number(search.fullscreen)
+        : undefined,
+    };
+  },
   component: RouteComponent,
 });
 
-const useSchedulesManager = (): {
+const useSchedulesManager = ({
+  schedules: savedSchedules,
+  selectedScheduleIdx: savedSelectedScheduleIdx,
+  saveSchedules,
+  saveSelectedScheduleIdx,
+}: {
+  schedules?: Schedule[];
+  selectedScheduleIdx?: number;
+  saveSchedules: (schedules: Schedule[]) => void;
+  saveSelectedScheduleIdx: (scheduleIdx: number) => void;
+}): {
   selectedSchedule: Schedule;
+  selectedScheduleIdx: number;
   schedules: Schedule[];
   schedulesManager: SchedulesManager;
 } => {
-  const [schedules, setSchedules] = useState<Schedule[]>(() => [
-    new Schedule([], 1),
-  ]);
-  const [selectedSchedule, setSelectedSchedule] = useState<Schedule>(
-    schedules[0]
+  const [schedules, setSchedules] = useState<Schedule[]>(() =>
+    savedSchedules
+      ? savedSchedules.map((schedule) => Schedule.load(schedule))
+      : [new Schedule({ courseSections: [], id: 1 })]
   );
+
+  const [selectedScheduleIdx, setSelectedScheduleIdx] = useState(
+    savedSelectedScheduleIdx ?? 0
+  );
+
+  const selectedSchedule = schedules[selectedScheduleIdx];
+
+  useEffect(() => {
+    const unsubscribe = selectedSchedule.subscribe(() => {
+      saveSchedules(schedules);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, [selectedScheduleIdx]);
+
+  useEffect(() => {
+    saveSelectedScheduleIdx(selectedScheduleIdx);
+  }, [selectedScheduleIdx]);
+
+  useEffect(() => {
+    saveSchedules(schedules);
+  }, [schedules]);
 
   const schedulesManager = useMemo(() => {
     return {
-      onSetSelectedSchedule: setSelectedSchedule,
+      onSetSelectedSchedule: (idx: number) => setSelectedScheduleIdx(idx),
       onAddSchedule: (newScheduleName: string) => {
-        const newSchedule = new Schedule(
-          [],
-          schedules.length + 1,
-          newScheduleName
-        );
+        const newSchedule = new Schedule({
+          courseSections: [],
+          id: schedules.length + 1,
+          name: newScheduleName,
+        });
+        const schedulesLength = schedules.length;
         setSchedules((prevSchedules) => [...prevSchedules, newSchedule]);
 
         // if we don't use setTimeout here, the ScheduleSelect component won't update the list fast enough to reflect it. Hence, we
         // use setTimeout to delay the state update and cause an additional rerender so the select component can register the new schedules.
-        setTimeout(() => setSelectedSchedule(newSchedule), 0);
+        setTimeout(() => setSelectedScheduleIdx(schedulesLength), 0);
       },
       onRemoveSchedule: (scheduleToRemove: Schedule) => {
         if (scheduleToRemove.id === 1) return;
@@ -63,18 +120,21 @@ const useSchedulesManager = (): {
         setSchedules(newSchedules);
 
         if (scheduleToRemove === selectedSchedule) {
-          setSelectedSchedule(schedules[index - 1]);
+          setSelectedScheduleIdx(index - 1);
         }
       },
       getSelectedSchedule: () => selectedSchedule,
       getScheduleById: (id: number) =>
         schedules.find((schedule) => schedule.id === id),
+      getScheduleByIndexId: (id: number) =>
+        schedules.findIndex((schedule) => schedule.id === id),
       getAllSchedules: () => schedules,
     };
   }, [selectedSchedule, schedules]);
 
   return {
     selectedSchedule,
+    selectedScheduleIdx,
     schedules,
     schedulesManager,
   };
@@ -94,7 +154,25 @@ const useSchedule = (selectedSchedule: Schedule) => {
 };
 
 function RouteComponent() {
-  const { selectedSchedule, schedulesManager } = useSchedulesManager();
+  const location = useLocation();
+  console.log(location);
+  const { fullscreen } = Route.useSearch();
+
+  const [savedSchedules, setSavedSchedules] = useLocalStorage<Schedule[]>(
+    "schedules",
+    undefined
+  );
+  const [savedSelectedScheduleIdx, setSavedSelectedScheduleIdx] =
+    useLocalStorage<number>("selectedSchedule", undefined);
+
+  const { selectedSchedule, selectedScheduleIdx, schedulesManager } =
+    useSchedulesManager({
+      schedules: savedSchedules,
+      selectedScheduleIdx: fullscreen ?? savedSelectedScheduleIdx,
+      saveSchedules: (schedules) => setSavedSchedules(schedules),
+      saveSelectedScheduleIdx: (schedule) =>
+        setSavedSelectedScheduleIdx(schedule),
+    });
   const { schedule, courseSections } = useSchedule(selectedSchedule);
   const [errorAddingSection, setErrorAddingSection] = useState<{
     reason: "duplicate" | "conflict";
@@ -132,6 +210,24 @@ function RouteComponent() {
     [schedule]
   );
 
+  if (Number.isInteger(fullscreen)) {
+    return (
+      <SchedulesManagerContext.Provider value={{ schedulesManager }}>
+        <ScheduleContext.Provider
+          value={{ schedule, onAddSection, onRemoveSection, onChangeSemester }}
+        >
+          <div className="flex justify-center h-full">
+            <Container className="w-[75%] border-r-1 border-r-background p-0 overflow-y-scroll scrollbar">
+              <div className="relative">
+                <Calendar courseSections={courseSections} />
+              </div>
+            </Container>
+          </div>
+        </ScheduleContext.Provider>
+      </SchedulesManagerContext.Provider>
+    );
+  }
+
   // TODO: just pass in the schedule instance directly in the context
   return (
     <>
@@ -149,7 +245,17 @@ function RouteComponent() {
                 <ActionsBar />
               </div>
               <div className="relative">
-                <Calendar courseSections={courseSections} />
+                <Calendar
+                  onHandleClick={() =>
+                    window.open(
+                      `http://localhost:5173${location.pathname}?fullscreen=${selectedScheduleIdx}`
+                    )
+                  }
+                  courseSections={courseSections}
+                  handle={
+                    <TablerPictureInPictureOff className="text-lg absolute opacity-20" />
+                  }
+                />
 
                 {/* <div className="absolute backdrop-blur-lg w-full h-full inset-0 bg-black/[15%] transition-all duration-150"></div> */}
                 {/* <div className="absolute inset-0 z-10 overflow-y-auto bg-menu-indicator opacity-35 flex min-h-full items-center justify-center text-center backdrop-blur-sm">

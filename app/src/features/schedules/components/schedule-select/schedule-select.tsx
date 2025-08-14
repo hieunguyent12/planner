@@ -22,9 +22,8 @@ function ScheduleSelect() {
         value={selectedSchedule.id}
         onValueChange={(value) => {
           // TODO: refactor this
-          schedulesManager.onSetSelectedSchedule(
-            schedulesManager.getScheduleById(value)!
-          );
+          const idx = schedulesManager.getScheduleByIndexId(value);
+          schedulesManager.onSetSelectedSchedule(idx === -1 ? 0 : idx);
         }}
         indicator={<TablerCheck className="size-3.5" />}
         className="w-40 text-base"

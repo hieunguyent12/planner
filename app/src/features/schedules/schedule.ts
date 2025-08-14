@@ -1,5 +1,7 @@
 import {
   CoursesSchema,
+  luxonDateTimeOptions,
+  luxonFormatString,
   type BaseCourseSchema,
   type BaseCourseSectionSchema,
   type CoursesSchemaType,
@@ -12,6 +14,7 @@ import { Store } from "@/features/schedules/store";
 import type z from "zod";
 import { colors } from "./colors";
 import { fetchCourseSections as apiFetchCourseSections } from "@/features/schedules/api";
+import { DateTime, Interval } from "luxon";
 
 export type SemesterType = {
   year: number;
@@ -22,22 +25,35 @@ export class Schedule extends Store {
   courseSections: DetailedCourseSectionSchemaType[] = [];
   name!: string;
   id!: number;
-  credits: string = "0";
-  semester: SemesterType = {
-    year: 2025,
-    season: "fall",
-  };
-  private availableColors = [...colors];
+  credits!: string;
+  semester!: SemesterType;
+  availableColors!: Array<(typeof colors)[number]>;
 
-  constructor(
-    courseSections: DetailedCourseSectionSchemaType[],
-    id: number,
-    name?: string
-  ) {
+  constructor({
+    courseSections,
+    id,
+    name,
+    credits = "0",
+    semester = {
+      year: 2025,
+      season: "fall",
+    },
+    availableColors = [...colors],
+  }: {
+    courseSections: DetailedCourseSectionSchemaType[];
+    id: number;
+    name?: string;
+    credits?: string;
+    semester?: SemesterType;
+    availableColors?: Array<(typeof colors)[number]>;
+  }) {
     super();
     this.courseSections = courseSections;
     this.name = name ?? `Schedule #${id}`;
     this.id = id;
+    this.credits = credits;
+    this.semester = semester;
+    this.availableColors = availableColors;
   }
 
   getSnapshot() {
@@ -48,6 +64,7 @@ export class Schedule extends Store {
     if (newName !== "") {
       this.name = newName;
     }
+    this.notifySubscribers();
   }
 
   getCourseSections(): DetailedCourseSectionSchemaType[] {
@@ -120,6 +137,7 @@ export class Schedule extends Store {
 
   setSemester(newSemester: SemesterType) {
     this.semester = newSemester;
+    this.notifySubscribers();
   }
 
   private calculateTotalCredits(): string {
@@ -176,6 +194,22 @@ export class Schedule extends Store {
     }
     return true;
   }
+
+  static load(schedule: Schedule) {
+    const loadedSchedule = new Schedule(schedule);
+
+    loadedSchedule.courseSections = loadedSchedule.courseSections.map(
+      (section) => {
+        if (!section.online) {
+          return InPersonCourseSection.load(section);
+        } else {
+          return new OnlineCourseSection(section);
+        }
+      }
+    );
+
+    return loadedSchedule;
+  }
 }
 
 export abstract class CourseSection
@@ -231,13 +265,41 @@ export class InPersonCourseSection
 
     return false;
   }
+
+  static load(section: InPersonCourseSection) {
+    const newSection = new InPersonCourseSection(section);
+
+    newSection.meetings = newSection.meetings.map((meeting) => {
+      const time = meeting.time.display.split("-");
+      const start = DateTime.fromFormat(
+        time[0].slice(0, -1),
+        luxonFormatString,
+        luxonDateTimeOptions
+      );
+      const end = DateTime.fromFormat(
+        time[1].slice(1),
+        luxonFormatString,
+        luxonDateTimeOptions
+      );
+      return {
+        ...meeting,
+        time: {
+          ...meeting.time,
+          start,
+          end,
+          timeInterval: Interval.fromDateTimes(start, end),
+        },
+      };
+    });
+
+    return newSection;
+  }
 }
 
 export class OnlineCourseSection
   extends CourseSection
   implements z.infer<typeof OnlineCourseSectionSchema>
 {
-  meetings!: MeetingSchemaType[];
   online: true = true;
 
   constructor(props: z.infer<typeof OnlineCourseSectionSchema>) {
