@@ -19,7 +19,7 @@ export const MainInput: Story = {
 
 export const MainInputWithIcon: Story = {
   args: {
-    icon: TablerSearch,
+    leftIcon: <TablerSearch />,
     autoComplete: "off",
   },
 };

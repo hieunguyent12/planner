@@ -15,7 +15,6 @@ import { Route as PlansIndexRouteImport } from './routes/plans/index'
 import { Route as BuildIndexRouteImport } from './routes/build/index'
 import { Route as SchedulesUfRouteImport } from './routes/schedules/uf'
 import { Route as PlansUfRouteImport } from './routes/plans/uf'
-import { Route as BuildUfRouteImport } from './routes/build/uf'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -47,15 +46,9 @@ const PlansUfRoute = PlansUfRouteImport.update({
   path: '/plans/uf',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BuildUfRoute = BuildUfRouteImport.update({
-  id: '/build/uf',
-  path: '/build/uf',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/build/uf': typeof BuildUfRoute
   '/plans/uf': typeof PlansUfRoute
   '/schedules/uf': typeof SchedulesUfRoute
   '/build': typeof BuildIndexRoute
@@ -64,7 +57,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/build/uf': typeof BuildUfRoute
   '/plans/uf': typeof PlansUfRoute
   '/schedules/uf': typeof SchedulesUfRoute
   '/build': typeof BuildIndexRoute
@@ -74,7 +66,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/build/uf': typeof BuildUfRoute
   '/plans/uf': typeof PlansUfRoute
   '/schedules/uf': typeof SchedulesUfRoute
   '/build/': typeof BuildIndexRoute
@@ -85,25 +76,16 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/build/uf'
     | '/plans/uf'
     | '/schedules/uf'
     | '/build'
     | '/plans'
     | '/schedules'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/build/uf'
-    | '/plans/uf'
-    | '/schedules/uf'
-    | '/build'
-    | '/plans'
-    | '/schedules'
+  to: '/' | '/plans/uf' | '/schedules/uf' | '/build' | '/plans' | '/schedules'
   id:
     | '__root__'
     | '/'
-    | '/build/uf'
     | '/plans/uf'
     | '/schedules/uf'
     | '/build/'
@@ -113,7 +95,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BuildUfRoute: typeof BuildUfRoute
   PlansUfRoute: typeof PlansUfRoute
   SchedulesUfRoute: typeof SchedulesUfRoute
   BuildIndexRoute: typeof BuildIndexRoute
@@ -165,19 +146,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlansUfRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/build/uf': {
-      id: '/build/uf'
-      path: '/build/uf'
-      fullPath: '/build/uf'
-      preLoaderRoute: typeof BuildUfRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BuildUfRoute: BuildUfRoute,
   PlansUfRoute: PlansUfRoute,
   SchedulesUfRoute: SchedulesUfRoute,
   BuildIndexRoute: BuildIndexRoute,

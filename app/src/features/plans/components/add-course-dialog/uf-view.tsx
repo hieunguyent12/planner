@@ -1,17 +1,16 @@
-import { Dialog } from "@/components/dialog";
 import { Input } from "@/components/input";
-import type { Course } from "@/types";
 import { useState } from "react";
-import { SearchResult } from "./search-result";
 import TablerSearch from "~icons/tabler/search";
+import type { Course } from "@/types";
+import { SearchResult } from "./search-result";
 
-type SearchProps = {
-  isOpen: boolean;
+export function UFView({
+  toggle,
+  onAddCourse,
+}: {
   toggle: () => void;
   onAddCourse?: (courseCode: string) => void;
-};
-
-function AddCourseDialog({ isOpen, toggle, onAddCourse }: SearchProps) {
+}) {
   const [searchResults] = useState<Course[]>([
     {
       id: "1",
@@ -100,49 +99,45 @@ function AddCourseDialog({ isOpen, toggle, onAddCourse }: SearchProps) {
   ]);
 
   return (
-    <Dialog isOpen={isOpen} toggle={toggle}>
-      <>
-        <div className="p-2 space-y-3">
-          <p>Spring 2025</p>
-          <div className="space-y-1">
-            <Input
-              className="w-full"
-              placeholder="Search"
-              icon={TablerSearch}
+    <>
+      <div className="p-2 space-y-3">
+        <p>Spring 2025</p>
+        <div className="space-y-1">
+          <Input
+            className="w-full"
+            placeholder="Search"
+            leftIcon={<TablerSearch />}
+          />
+          <p className="text-xs text-gray-400">Example: MAC2302, ACG2010</p>
+        </div>
+      </div>
+      <div className="max-h-106 overflow-y-auto overflow-x-hidden">
+        <div className="pl-2">
+          <p className="text-sm">3 Results</p>
+        </div>
+        <div className="p-2">
+          {searchResults.map((result) => (
+            <SearchResult
+              key={result.id}
+              result={result}
+              onAddCourse={onAddCourse}
             />
-            <p className="text-xs text-gray-400">Example: MAC2302, ACG2010</p>
-          </div>
+          ))}
         </div>
-        <div className="max-h-106 overflow-y-auto overflow-x-hidden">
-          <div className="pl-2">
-            <p className="text-sm">3 Results</p>
-          </div>
-          <div className="p-2">
-            {searchResults.map((result) => (
-              <SearchResult
-                key={result.id}
-                result={result}
-                onAddCourse={onAddCourse}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="flex gap-4 justify-between p-2">
-          <p className="text-sm w-[80%]">
-            NOTE: Not all courses will be offered for the semester you have
-            chosen. Make sure you check its availability on ONE.UF before your
-            registration time!
-          </p>
-          <button
-            className="p-2 cursor-pointer text-red-400 hover:bg-slate-100 rounded-md"
-            onClick={toggle}
-          >
-            Cancel
-          </button>
-        </div>
-      </>
-    </Dialog>
+      </div>
+      <div className="flex gap-4 justify-between p-2">
+        <p className="text-sm w-[80%]">
+          NOTE: Not all courses will be offered for the semester you have
+          chosen. Make sure you check its availability on ONE.UF before your
+          registration time!
+        </p>
+        <button
+          className="p-2 cursor-pointer text-red-400 hover:bg-slate-100 rounded-md"
+          onClick={toggle}
+        >
+          Cancel
+        </button>
+      </div>
+    </>
   );
 }
-
-export { AddCourseDialog };

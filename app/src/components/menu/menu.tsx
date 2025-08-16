@@ -36,6 +36,7 @@ function Menu({ children }: { children: React.ReactNode }) {
           Plans
         </MenuItem>
         {isUFView && (
+          // @ts-ignore
           <MenuItem to="/build/uf">
             <TablerTools />
             Build

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { AddCourseDialog } from "../add-course-dialog";
+import { AddCourseDialog } from ".";
 
 const meta = {
   title: "Add Course Dialog",

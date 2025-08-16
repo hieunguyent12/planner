@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Plan } from "@/features/plans/plan";
+import { Plan } from "@/features/plans/components/plan";
 import { Container } from "@/components/container";
 
 export const Route = createFileRoute("/plans/")({
@@ -104,8 +104,8 @@ export const BasicFourYearPlan: any = [
 
 function RouteComponent() {
   return (
-    <div className="h-[92%] overflow-y-auto scrollbar">
-      <Container className="w-full border-r-1 border-r-background p-2">
+    <div className="flex justify-center h-[92%]">
+      <Container className="w-[75%] border-r-1 border-r-background px-3 overflow-y-scroll scrollbar">
         <Plan fourYearPlan={BasicFourYearPlan} />
       </Container>
     </div>

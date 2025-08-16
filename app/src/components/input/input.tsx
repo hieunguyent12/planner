@@ -3,8 +3,8 @@ import "./styles.css";
 import { useId, useRef, type ComponentType, type SVGProps } from "react";
 import { cn } from "@/utils/cn";
 
-const input = tv({
-  base: "input",
+export const inputStyles = tv({
+  base: "bg-transparent text-primary-foreground placeholder:text-gray-400 border border-primary-border rounded-md focus:outline-none focus:border-blue-500 hover:border-gray-300 dark:hover:border-gray-500 focus:hover:border-blue-500",
   variants: {
     size: {
       base: "",
@@ -21,7 +21,7 @@ const input = tv({
 
 interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
-    VariantProps<typeof input> {
+    VariantProps<typeof inputStyles> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
@@ -46,7 +46,7 @@ function Input({ className, size, leftIcon, rightIcon, ...props }: InputProps) {
         id={inputId}
         className={cn(
           "peer",
-          input({
+          inputStyles({
             size,
             className: cn(className, leftIcon && "pl-9", rightIcon && "pr-9"),
           })

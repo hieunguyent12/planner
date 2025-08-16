@@ -14,7 +14,7 @@ const Dialog = ({ isOpen, toggle, children, className }: ModalProps) => {
     <BaseDialog.Root open={isOpen} onOpenChange={toggle}>
       <BaseDialog.Portal>
         <BaseDialog.Backdrop className="fixed inset-0 bg-black opacity-20 transition-all duration-150 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0 dark:opacity-70" />
-        {/* -translate-y-1/2  */}
+
         <BaseDialog.Popup
           initialFocus={undefined}
           className={cn(
