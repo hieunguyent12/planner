@@ -22,7 +22,7 @@ function ScheduleSelect() {
         value={selectedSchedule.id}
         onValueChange={(value) => {
           // TODO: refactor this
-          const idx = schedulesManager.getScheduleByIndexId(value);
+          const idx = schedulesManager.getScheduleByIndex(value);
           schedulesManager.onSetSelectedSchedule(idx === -1 ? 0 : idx);
         }}
         indicator={<TablerCheck className="size-3.5" />}

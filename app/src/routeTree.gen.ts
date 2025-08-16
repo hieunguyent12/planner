@@ -9,89 +9,120 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SchedulesRouteImport } from './routes/schedules'
-import { Route as PlansRouteImport } from './routes/plans'
-import { Route as BuildRouteImport } from './routes/build'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SchedulesIndexRouteImport } from './routes/schedules/index'
+import { Route as PlansIndexRouteImport } from './routes/plans/index'
+import { Route as BuildIndexRouteImport } from './routes/build/index'
+import { Route as SchedulesUfRouteImport } from './routes/schedules/uf'
+import { Route as PlansUfRouteImport } from './routes/plans/uf'
+import { Route as BuildUfRouteImport } from './routes/build/uf'
 
-const SchedulesRoute = SchedulesRouteImport.update({
-  id: '/schedules',
-  path: '/schedules',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PlansRoute = PlansRouteImport.update({
-  id: '/plans',
-  path: '/plans',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BuildRoute = BuildRouteImport.update({
-  id: '/build',
-  path: '/build',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SchedulesIndexRoute = SchedulesIndexRouteImport.update({
+  id: '/schedules/',
+  path: '/schedules/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlansIndexRoute = PlansIndexRouteImport.update({
+  id: '/plans/',
+  path: '/plans/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildIndexRoute = BuildIndexRouteImport.update({
+  id: '/build/',
+  path: '/build/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SchedulesUfRoute = SchedulesUfRouteImport.update({
+  id: '/schedules/uf',
+  path: '/schedules/uf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlansUfRoute = PlansUfRouteImport.update({
+  id: '/plans/uf',
+  path: '/plans/uf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildUfRoute = BuildUfRouteImport.update({
+  id: '/build/uf',
+  path: '/build/uf',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/build': typeof BuildRoute
-  '/plans': typeof PlansRoute
-  '/schedules': typeof SchedulesRoute
+  '/build/uf': typeof BuildUfRoute
+  '/plans/uf': typeof PlansUfRoute
+  '/schedules/uf': typeof SchedulesUfRoute
+  '/build': typeof BuildIndexRoute
+  '/plans': typeof PlansIndexRoute
+  '/schedules': typeof SchedulesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/build': typeof BuildRoute
-  '/plans': typeof PlansRoute
-  '/schedules': typeof SchedulesRoute
+  '/build/uf': typeof BuildUfRoute
+  '/plans/uf': typeof PlansUfRoute
+  '/schedules/uf': typeof SchedulesUfRoute
+  '/build': typeof BuildIndexRoute
+  '/plans': typeof PlansIndexRoute
+  '/schedules': typeof SchedulesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/build': typeof BuildRoute
-  '/plans': typeof PlansRoute
-  '/schedules': typeof SchedulesRoute
+  '/build/uf': typeof BuildUfRoute
+  '/plans/uf': typeof PlansUfRoute
+  '/schedules/uf': typeof SchedulesUfRoute
+  '/build/': typeof BuildIndexRoute
+  '/plans/': typeof PlansIndexRoute
+  '/schedules/': typeof SchedulesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/build' | '/plans' | '/schedules'
+  fullPaths:
+    | '/'
+    | '/build/uf'
+    | '/plans/uf'
+    | '/schedules/uf'
+    | '/build'
+    | '/plans'
+    | '/schedules'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/build' | '/plans' | '/schedules'
-  id: '__root__' | '/' | '/build' | '/plans' | '/schedules'
+  to:
+    | '/'
+    | '/build/uf'
+    | '/plans/uf'
+    | '/schedules/uf'
+    | '/build'
+    | '/plans'
+    | '/schedules'
+  id:
+    | '__root__'
+    | '/'
+    | '/build/uf'
+    | '/plans/uf'
+    | '/schedules/uf'
+    | '/build/'
+    | '/plans/'
+    | '/schedules/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BuildRoute: typeof BuildRoute
-  PlansRoute: typeof PlansRoute
-  SchedulesRoute: typeof SchedulesRoute
+  BuildUfRoute: typeof BuildUfRoute
+  PlansUfRoute: typeof PlansUfRoute
+  SchedulesUfRoute: typeof SchedulesUfRoute
+  BuildIndexRoute: typeof BuildIndexRoute
+  PlansIndexRoute: typeof PlansIndexRoute
+  SchedulesIndexRoute: typeof SchedulesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/schedules': {
-      id: '/schedules'
-      path: '/schedules'
-      fullPath: '/schedules'
-      preLoaderRoute: typeof SchedulesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/plans': {
-      id: '/plans'
-      path: '/plans'
-      fullPath: '/plans'
-      preLoaderRoute: typeof PlansRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/build': {
-      id: '/build'
-      path: '/build'
-      fullPath: '/build'
-      preLoaderRoute: typeof BuildRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -99,14 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/schedules/': {
+      id: '/schedules/'
+      path: '/schedules'
+      fullPath: '/schedules'
+      preLoaderRoute: typeof SchedulesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plans/': {
+      id: '/plans/'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof PlansIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/build/': {
+      id: '/build/'
+      path: '/build'
+      fullPath: '/build'
+      preLoaderRoute: typeof BuildIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/schedules/uf': {
+      id: '/schedules/uf'
+      path: '/schedules/uf'
+      fullPath: '/schedules/uf'
+      preLoaderRoute: typeof SchedulesUfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/plans/uf': {
+      id: '/plans/uf'
+      path: '/plans/uf'
+      fullPath: '/plans/uf'
+      preLoaderRoute: typeof PlansUfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/build/uf': {
+      id: '/build/uf'
+      path: '/build/uf'
+      fullPath: '/build/uf'
+      preLoaderRoute: typeof BuildUfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BuildRoute: BuildRoute,
-  PlansRoute: PlansRoute,
-  SchedulesRoute: SchedulesRoute,
+  BuildUfRoute: BuildUfRoute,
+  PlansUfRoute: PlansUfRoute,
+  SchedulesUfRoute: SchedulesUfRoute,
+  BuildIndexRoute: BuildIndexRoute,
+  PlansIndexRoute: PlansIndexRoute,
+  SchedulesIndexRoute: SchedulesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

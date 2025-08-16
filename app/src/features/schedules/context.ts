@@ -15,7 +15,7 @@ export interface SchedulesManager {
   onRemoveSchedule: (schedule: Schedule) => void;
   getSelectedSchedule: () => Schedule;
   getScheduleById: (id: number) => Schedule | undefined;
-  getScheduleByIndexId: (id: number) => number;
+  getScheduleByIndex: (id: number) => number;
   getAllSchedules: () => Schedule[];
 }
 

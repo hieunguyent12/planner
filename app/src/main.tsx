@@ -11,11 +11,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 function App() {
   return (
     <ThemeProvider defaultTheme="dark">
-      <DesktopLayout>
-        <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} />
-        </QueryClientProvider>
-      </DesktopLayout>
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

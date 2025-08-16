@@ -5,7 +5,6 @@ import { Input } from "@/components/input";
 import {
   dayMap,
   DetailedCourseSectionSchema,
-  reverseDayMap,
 } from "@/features/schedules/schema";
 import { cn } from "@/utils/cn";
 import { useContext, useEffect, useState } from "react";
@@ -13,6 +12,10 @@ import TablerPlus from "~icons/tabler/plus";
 import TablerX from "~icons/tabler/x";
 import { nanoid } from "nanoid";
 import { ScheduleContext } from "@/features/schedules/context";
+import {
+  useAddCourseError,
+  AddCourseError,
+} from "@/features/schedules/components/add-course-error";
 
 export function AddCourseDialog({ label = "Add course" }: { label?: string }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -56,6 +59,8 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
   const [meetings, setMeetings] = useState<any[]>([]);
   const [isError, setIsError] = useState(false);
 
+  const { errorAddingSection, setErrorAddingSection } = useAddCourseError();
+
   const onCreateCourse = () => {
     const { error, data } = DetailedCourseSectionSchema.safeParse({
       id: nanoid(),
@@ -87,6 +92,16 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
 
     if (error) {
       setIsError(true);
+      return;
+    }
+
+    const result = schedule.canAddSection(data);
+
+    if (!result.success) {
+      setErrorAddingSection({
+        reason: result.reason,
+        conflicts: result.conflicts,
+      });
       return;
     }
 
@@ -210,6 +225,13 @@ export function AddCourseContainer({ toggle }: { toggle: () => void }) {
             </p>
           </div>
         )}
+
+        {errorAddingSection && (
+          <AddCourseError
+            reason={errorAddingSection?.reason}
+            conflicts={errorAddingSection.conflicts}
+          />
+        )}
         <div className="flex items-center gap-1 mt-3">
           <Button
             onClick={toggle}
@@ -274,19 +296,6 @@ export function CustomMeeting({
         days: selectedDays,
         start: startTime,
         end: endTime,
-        // days: selectedDays.map((day) => dayMap[day as keyof typeof dayMap]),
-        // start:
-        //   typeof startTime === "string"
-        //     ? startTime
-        //     : `${startTime.hour === "" ? "8" : startTime.hour}:${
-        //         startTime.minute === "" ? "00" : startTime.minute
-        //       } ${startTime.meridiem}`,
-        // end:
-        //   typeof endTime === "string"
-        //     ? endTime
-        //     : `${endTime.hour === "" ? "9" : endTime.hour}:${
-        //         endTime.minute === "" ? "00" : endTime.minute
-        //       } ${endTime.meridiem}`,
       },
     });
   }, [selectedDays, startTime, endTime, location, instructor]);

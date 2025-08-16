@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Plan } from "@/features/plans/plan";
 import { Container } from "@/components/container";
 
-export const Route = createFileRoute("/plans")({
+export const Route = createFileRoute("/plans/")({
   component: RouteComponent,
 });
 

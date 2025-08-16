@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  useLocation,
-  useSearch,
-} from "@tanstack/react-router";
+import { useLocation } from "@tanstack/react-router";
 import { SearchCourse } from "@/features/schedules/components/search-course";
 import { Container } from "@/components/container";
 import { Calendar } from "@/features/schedules/components/calendar";
@@ -14,11 +10,7 @@ import {
   useSyncExternalStore,
 } from "react";
 import type { DetailedCourseSectionSchemaType } from "@/features/schedules/schema";
-import {
-  InPersonCourseSection,
-  Schedule,
-  type SemesterType,
-} from "@/features/schedules/schedule";
+import { Schedule, type SemesterType } from "@/features/schedules/schedule";
 import { ActionsBar } from "@/features/schedules/components/actions-bar";
 import {
   ScheduleContext,
@@ -27,23 +19,13 @@ import {
 } from "@/features/schedules/context";
 import { Dialog } from "@/components/dialog";
 import { Button } from "@/components/button";
-import TablerAlertCircleFilled from "~icons/tabler/alert-circle-filled";
 import TablerPictureInPictureOff from "~icons/tabler/picture-in-picture-off";
 
 import { useLocalStorage } from "@uidotdev/usehooks";
-
-export const Route = createFileRoute("/schedules")({
-  validateSearch: (
-    search: Record<string, unknown>
-  ): { fullscreen?: number } => {
-    return {
-      fullscreen: Number.isInteger(search?.fullscreen)
-        ? Number(search.fullscreen)
-        : undefined,
-    };
-  },
-  component: RouteComponent,
-});
+import {
+  AddCourseError,
+  useAddCourseError,
+} from "@/features/schedules/components/add-course-error";
 
 const useSchedulesManager = ({
   schedules: savedSchedules,
@@ -126,7 +108,7 @@ const useSchedulesManager = ({
       getSelectedSchedule: () => selectedSchedule,
       getScheduleById: (id: number) =>
         schedules.find((schedule) => schedule.id === id),
-      getScheduleByIndexId: (id: number) =>
+      getScheduleByIndex: (id: number) =>
         schedules.findIndex((schedule) => schedule.id === id),
       getAllSchedules: () => schedules,
     };
@@ -153,10 +135,14 @@ const useSchedule = (selectedSchedule: Schedule) => {
   };
 };
 
-function RouteComponent() {
+export function SchedulesPage({
+  fullscreen,
+  isUFStudent = false,
+}: {
+  fullscreen: any;
+  isUFStudent?: boolean;
+}) {
   const location = useLocation();
-  console.log(location);
-  const { fullscreen } = Route.useSearch();
 
   const [savedSchedules, setSavedSchedules] = useLocalStorage<Schedule[]>(
     "schedules",
@@ -174,10 +160,7 @@ function RouteComponent() {
         setSavedSelectedScheduleIdx(schedule),
     });
   const { schedule, courseSections } = useSchedule(selectedSchedule);
-  const [errorAddingSection, setErrorAddingSection] = useState<{
-    reason: "duplicate" | "conflict";
-    conflicts?: InPersonCourseSection[];
-  } | null>(null);
+  const { errorAddingSection, setErrorAddingSection } = useAddCourseError();
 
   const onAddSection = useCallback(
     (section: DetailedCourseSectionSchemaType) => {
@@ -235,37 +218,61 @@ function RouteComponent() {
         <ScheduleContext.Provider
           value={{ schedule, onAddSection, onRemoveSection, onChangeSemester }}
         >
-          <div className="h-full grid grid-cols-3 gap-4 items-start">
-            <Container className="col-span-1">
-              <SearchCourse />
-            </Container>
+          {isUFStudent ? (
+            <div className="h-full grid grid-cols-3 gap-4 items-start">
+              <Container className="col-span-1">
+                <SearchCourse />
+              </Container>
 
-            <Container className="col-span-2 border-r-1 border-r-background p-0 h-[92%] overflow-y-scroll scrollbar">
-              <div className="p-2 border-b-1 border-gray-100 dark:border-neutral-800">
-                <ActionsBar />
-              </div>
-              <div className="relative">
-                <Calendar
-                  onHandleClick={() =>
-                    window.open(
-                      `http://localhost:5173${location.pathname}?fullscreen=${selectedScheduleIdx}`
-                    )
-                  }
-                  courseSections={courseSections}
-                  handle={
-                    <TablerPictureInPictureOff className="text-lg absolute opacity-20" />
-                  }
-                />
+              <Container className="col-span-2 border-r-1 border-r-background p-0 h-[92%] overflow-y-scroll scrollbar">
+                <div className="p-2 border-b-1 border-gray-100 dark:border-neutral-800">
+                  <ActionsBar />
+                </div>
 
-                {/* <div className="absolute backdrop-blur-lg w-full h-full inset-0 bg-black/[15%] transition-all duration-150"></div> */}
-                {/* <div className="absolute inset-0 z-10 overflow-y-auto bg-menu-indicator opacity-35 flex min-h-full items-center justify-center text-center backdrop-blur-sm">
+                <div className="relative">
+                  <Calendar
+                    onHandleClick={() =>
+                      window.open(
+                        `http://localhost:5173${location.pathname}?fullscreen=${selectedScheduleIdx}`
+                      )
+                    }
+                    courseSections={courseSections}
+                    handle={
+                      <TablerPictureInPictureOff className="text-lg absolute opacity-20" />
+                    }
+                  />
+
+                  {/* <div className="absolute backdrop-blur-lg w-full h-full inset-0 bg-black/[15%] transition-all duration-150"></div> */}
+                  {/* <div className="absolute inset-0 z-10 overflow-y-auto bg-menu-indicator opacity-35 flex min-h-full items-center justify-center text-center backdrop-blur-sm">
                 <div className="absolute top-0">
                   <p>Test</p>
                 </div>
               </div> */}
-              </div>
-            </Container>
-          </div>
+                </div>
+              </Container>
+            </div>
+          ) : (
+            <div className="flex justify-center h-[92%]">
+              <Container className="w-[75%] border-r-1 border-r-background p-0 overflow-y-scroll scrollbar">
+                <div className="p-2 border-b-1 border-gray-100 dark:border-neutral-800">
+                  <ActionsBar />
+                </div>
+                <div className="relative">
+                  <Calendar
+                    onHandleClick={() =>
+                      window.open(
+                        `http://localhost:5173${location.pathname}?fullscreen=${selectedScheduleIdx}`
+                      )
+                    }
+                    courseSections={courseSections}
+                    handle={
+                      <TablerPictureInPictureOff className="text-lg absolute opacity-20" />
+                    }
+                  />
+                </div>
+              </Container>
+            </div>
+          )}
         </ScheduleContext.Provider>
       </SchedulesManagerContext.Provider>
       <Dialog
@@ -273,39 +280,10 @@ function RouteComponent() {
         toggle={() => setErrorAddingSection(null)}
       >
         <div className="p-3">
-          <div className="space-y-2">
-            <div className="flex items-center gap-1 text-red-500">
-              <TablerAlertCircleFilled />
-              <p className="text-lg font-medium">Unable to add course</p>
-            </div>
-            <p>
-              Reason:{" "}
-              {errorAddingSection?.reason === "duplicate"
-                ? `Duplicate course section found in schedule.`
-                : `Time conflicts with other sections.`}
-            </p>
-
-            {errorAddingSection?.reason === "conflict" && (
-              <div>
-                <p>Conflicting sections: </p>
-                {errorAddingSection?.conflicts?.map((section) => (
-                  <div key={section.id}>
-                    <p className="underline">{section.code}:</p>
-                    {section.meetings.map((meeting, i) => (
-                      <p key={i}>
-                        {/* how do i disable prettier for this line? */}
-                        {`${meeting.time.days.join(
-                          ", "
-                        )}: ${meeting.time.start.toFormat(
-                          "h:mm a"
-                        )} - ${meeting.time.end.toFormat("h:mm a")}`}
-                      </p>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <AddCourseError
+            reason={errorAddingSection?.reason}
+            conflicts={errorAddingSection?.conflicts}
+          />
 
           <Button
             variant="secondary"

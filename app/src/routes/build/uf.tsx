@@ -17,7 +17,7 @@ import { CheckboxGroup } from "@base-ui-components/react/checkbox-group";
 import TablerPlus from "~icons/tabler/plus";
 import TablerCheck from "~icons/tabler/check";
 
-export const Route = createFileRoute("/build")({
+export const Route = createFileRoute("/build/uf")({
   component: RouteComponent,
 });
 
